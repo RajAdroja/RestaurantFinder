@@ -1,0 +1,18 @@
+# Node.js / React
+node_modules/
+build/
+
+# Golang
+*.exe
+*.out
+*.log
+vendor/
+
+# Postgres
+*.log
+*.sql
+pgdata/
+
+# Docker
+docker-compose.yml
+.docker/
