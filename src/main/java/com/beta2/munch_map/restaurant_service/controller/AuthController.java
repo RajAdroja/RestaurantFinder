@@ -95,7 +95,7 @@ public class AuthController {
 
             return ResponseEntity.status(201).body("User registered successfully. Please verify your email using the OTP sent.");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(400).body("Invalid role. Allowed roles: CUSTOMER, BUSINESS_OWNER.");
+            return ResponseEntity.status(400).body("Invalid role. Allowed roles: USER, BUSINESS_OWNER.");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("An error occurred: " + e.getMessage());
         }

@@ -14,7 +14,7 @@ import java.util.UUID;
 public class S3Service {
 
     private final S3Client s3Client;
-    private final String bucketName = "your-bucket-name";
+    private final String bucketName = "beta2-image-bucket";
 
     public S3Service(S3Client s3Client) {
         this.s3Client = s3Client;

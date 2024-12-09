@@ -8,6 +8,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "\"users\"")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +22,7 @@ public class User {
     private boolean isVerified;
 
     @Enumerated(EnumType.STRING)
-    private Role role; // CUSTOMER, BUSINESS_OWNER, ADMIN
+    private Role role; // USER, BUSINESS_OWNER, ADMIN
 
     public Long getId() {
         return id;

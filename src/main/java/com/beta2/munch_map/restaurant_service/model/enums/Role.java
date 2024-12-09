@@ -1,7 +1,7 @@
 package com.beta2.munch_map.restaurant_service.model.enums;
 
 public enum Role {
-    CUSTOMER,
+    USER,
     BUSINESS_OWNER,
     ADMIN
 }

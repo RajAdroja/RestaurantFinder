@@ -25,15 +25,16 @@ import org.springframework.web.multipart.MultipartFile;
 public class ReviewController {
 
     private final Logger logger = LoggerFactory.getLogger(ReviewController.class);
-    private final ReviewService reviewService;
+    @Autowired
+    private ReviewService reviewService;
 
     @Autowired
     private UserRepository userRepository;
 
     // Constructor-based injection of ReviewService
-    public ReviewController(ReviewService reviewService) {
-        this.reviewService = reviewService;
-    }
+//    public ReviewController(ReviewService reviewService) {
+//        this.reviewService = reviewService;
+//    }
 
 
     // Delete (soft delete) a review
@@ -52,7 +53,7 @@ public class ReviewController {
 //    }
 
     // Get reviews for a specific restaurant
-    @GetMapping("/restaurant/{restaurantId}")
+//    @GetMapping("/restaurant/{restaurantId}")
     public ResponseEntity<List<Review>> getRestaurantReviews(@PathVariable Long restaurantId) {
         logger.info("Received request to get reviews for restaurant with ID: " + restaurantId);
         return ResponseEntity.ok(reviewService.getRestaurantReviews(restaurantId));
