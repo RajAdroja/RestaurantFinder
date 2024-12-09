@@ -1,0 +1,100 @@
+Primary Database PostgreSQL
+
+  1.	Structured Data with Relationships
+  2.	Complex Queries
+  3.	Geospatial Data
+  4.	Role-Based Access Control
+
+Search/Indexing Elasticsearch
+
+  •	Elasticsearch can be used alongside PostgreSQL to provide advanced search functionality for restaurants by name, category, location, and ratings.
+
+Relationship Between Tables
+
+  •	Users (General, Business Owners, Admins) will interact with:
+
+    o	Restaurants: Users submit reviews and ratings, Business Owners can manage listings.
+    o	Reviews: Users can leave reviews for restaurants, and view others’ reviews.
+    o	Categories: Restaurants are classified into categories.
+    o	Restaurant Photos: Business Owners upload photos for their restaurant listings.
+    o	Login Sessions: To manage user login and session tracking.
+
+  •	Admins will interact with:
+
+    o	Restaurants: They can remove listings (closed businesses) or manage duplicates.
+    o	Duplicates: Admins can check and flag duplicate entries.
+
+
+
+Final Overview of Tables: 
+
+  1.	Users: Manage all user roles (General, Business Owner, Admin).
+  2.	Restaurants: Store restaurant data.
+  3.	Reviews: User-submitted reviews and ratings for restaurants.
+  4.	Categories: Predefined types of restaurants (e.g., cuisine types).
+  5.	Restaurant Photos: Photos associated with restaurants.
+  6.	Restaurant Owners: Relationship table linking business owners to restaurants.
+
+Additional:
+
+  1.	Login Sessions: Store login sessions for users.
+  2.	Duplicates: Track duplicate restaurant listings flagged by admins.
+
+
+Tables:
+  1.	Users Table
+    •	Id 
+    •	Username 
+    •	Email 
+    •	Password 
+    •	Role
+    •	Created at 
+    •	Updated at
+  
+  2.	Restaurants Table
+
+    •	id 
+    •	owner id 
+    •	name 
+    •	description 
+    •	category 
+    •	 price range 
+    •	 location 
+    •	address 
+    •	phone number 
+    •	website 
+    •	Active hours 
+    •	created at 
+    •	updated at 
+  
+  3.	Reviews Table
+
+    •	id 
+    •	restaurant id
+    •	 user
+    •	rating 
+    •	comment 
+    •	 created at 
+
+  4.	Categories Table
+
+    •	id 
+    •	name
+
+  5.	Restaurant Photos Table
+
+    •	id 
+    •	restaurant id
+    •	photo URL 
+    •	uploaded at
+
+  6.	Restaurant Owners Table
+
+    •	id 
+    •	owner id 
+    •	restaurant id 
+    •	created at
+
+  7.	Login Sessions Table
+
+  8.	Duplicates Table

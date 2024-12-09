@@ -1,0 +1,50 @@
+Microservices architecture consists of following microservices to support the different functionalities for Users, Business Owners, and Admins in the RestaurantFinder application. Here’s a high-level backend design that includes core microservices, necessary classes, and API endpoints for each module. For tabular structure of the same, refer to README section.
+
+1. Restaurant Service (GraphQL)
+Since this service will use GraphQL, it will have a single GraphQL endpoint that supports queries and mutations based on the GraphQL schema.
+  GraphQL Endpoint:
+    - POST /graphql
+
+2. User Service (REST API)
+The User Service handles user registration, authentication, and profile management. Since it uses REST, each action is mapped to a specific HTTP endpoint.
+  Endpoints:
+    - User Registration: POST /api/user/register                                ->  Registers a new user (Customer, Business Owner, or Admin).
+    - User Login: POST /api/user/login                                          ->  Authenticates user and returns a JWT token.
+    - Get User Profile: GET /api/user/profile/{userId}                          ->  Retrieves user profile details.
+    - Update User Profile: PUT /api/user/profile/{userId}                       ->  Updates user profile information.
+    - Search Restaurants (by Name, Category, Location):                         ->  Forwards search requests to the Restaurant Service's GraphQL endpoint as needed.
+
+3. Review & Rating Service (REST API)
+This service manages reviews and ratings submitted by users for specific restaurants.
+  Endpoints:
+    -  Add a Review: POST /api/review                                           ->  Adds a new review for a restaurant. The payload includes the restaurantId, userId, reviewText, and rating.
+    -  Edit a Review: PUT /api/review/{reviewId}                                ->  Updates an existing review with the specified reviewId.
+    -  Delete a Review: DELETE /api/review/{reviewId}                           ->  Deletes a review by reviewId.
+    -  Get Reviews by Restaurant ID: GET /api/review/restaurant/{restaurantId}  ->  Retrieves all reviews for a specified restaurant.
+    -  Add a Rating: POST /api/rating                                           ->  Adds a rating to a restaurant. The payload includes restaurantId, userId, and ratingValue.
+    -  Get Ratings by Restaurant ID: GET /api/rating/restaurant/{restaurantId}  ->  Retrieves the average rating or all ratings for a specified restaurant.
+
+4. Search Service (REST API)
+The Search Service handles search functionality based on criteria like name, category, and location. It can either directly search or act as a proxy to the Restaurant Service for GraphQL search queries.
+  Endpoints:
+    -  Search Restaurants by Name: GET /api/search/name/{name}  Searches for restaurants by name.
+    -  Search Restaurants by Category: GET /api/search/category/{category}      ->  Searches for restaurants by category.
+    -  Search Restaurants by Location: GET /api/search/location/{location}      ->  Searches for restaurants by location.
+    -  Search Restaurants by Price Range: GET /api/search/price/{priceLevel}    ->  Searches restaurants within a specified price range.
+These endpoints can communicate with the Restaurant Service's GraphQL API as needed for complex search requirements.
+
+5. Map Service (REST API)
+This service integrates with an external Maps API to fetch location-based information, useful for restaurant searches by location.
+  Endpoints:
+    -  Fetch Address by Zip Code: GET /api/map/address/{zipcode}                ->  Uses a Maps API to get the full address based on the ZIP code.
+    -  Fetch Nearby Restaurants by Location: GET /api/map/nearby/{location}     ->  Uses Maps API to fetch nearby restaurant information, even if those restaurants are not registered in the application.
+6. Admin Service (REST API)
+The Admin Service allows admin users to manage listings, handle duplicates, and manage user and business accounts.
+  Endpoints:
+    -  Remove Duplicate Listings: POST /api/admin/removeDuplicates              ->  Scans for and removes duplicate restaurant listings.
+    -  Remove Restaurant Entry: DELETE /api/admin/removeRestaurant/{restaurantId}  ->  Deletes a restaurant entry from the database.
+    -  Manage Users:
+        -  View All Users: GET /api/admin/users
+        -  Block User: PUT /api/admin/users/block/{userId}
+        -  Delete User: DELETE /api/admin/users/{userId}
+These endpoints are typically restricted to Admins only and should be secured with role-based access control.

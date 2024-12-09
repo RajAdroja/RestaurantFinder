@@ -1,0 +1,36 @@
+type Restaurant {
+    restaurantId: ID!
+    name: String!
+    address: String
+    cuisineType: CuisineType
+    priceLevel: PriceLevel
+    reviews: [Review]
+}
+
+type Review {
+    reviewId: ID!
+    text: String!
+    rating: Float
+}
+
+enum CuisineType {
+    ITALIAN
+    CHINESE
+    INDIAN
+    MEXICAN
+}
+
+enum PriceLevel {
+    LOW
+    MEDIUM
+    HIGH
+}
+
+type Query {
+    getRestaurantById(id: ID!): Restaurant
+    searchRestaurants(name: String, category: String, location: String): [Restaurant]
+}
+
+type Mutation {
+    addRestaurant(name: String!, address: String, cuisineType: CuisineType, priceLevel: PriceLevel): Restaurant
+}
