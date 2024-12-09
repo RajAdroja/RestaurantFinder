@@ -22,9 +22,11 @@ const RestaurantDetails = ({ listings, reviews, addReview, userRole }) => {
             {restaurant ? (
                 <>
                     <h1 className="text-4xl font-bold mb-4">{restaurant.name}</h1>
-                    <p>Address: {restaurant.address}</p>
-                    <p>Description: {restaurant.description}</p>
-                    <p>Category: {restaurant.category}</p>
+                    <p><strong>Address:</strong> {restaurant.address}, {restaurant.zipCode}</p>
+                    <p><strong>Description:</strong> {restaurant.description}</p>
+                    <p><strong>Category:</strong> {restaurant.cuisine}</p>
+                    <p><strong>Type of Food:</strong> {restaurant.foodType}</p>
+                    <p><strong>Price Range:</strong> {restaurant.priceRange}</p>
 
                     {/* Display Photos */}
                     {restaurant.photos && restaurant.photos.length > 0 && (
@@ -53,38 +55,14 @@ const RestaurantDetails = ({ listings, reviews, addReview, userRole }) => {
                             reviews[restaurantId].map((review, index) => (
                                 <div key={index} className="mb-4 border p-4 rounded">
                                     <p>{review.text}</p>
-                                    <p>Rating: {review.rating}</p>
-                                    <p>Date: {review.date}</p>
+                                    <p><strong>Rating:</strong> {review.rating}</p>
+                                    <p><strong>Date:</strong> {review.date}</p>
                                 </div>
                             ))
                         ) : (
                             <p>No reviews yet.</p>
                         )}
                     </div>
-
-                    {/* Add Review Form (Only for Users, Not Business Owners) */}
-                    {userRole === "user" && (
-                        <form onSubmit={handleReviewSubmit} className="mt-6">
-                            <textarea
-                                className="border p-2 w-full mb-4"
-                                placeholder="Write your review..."
-                                value={reviewText}
-                                onChange={(e) => setReviewText(e.target.value)}
-                            />
-                            <input
-                                type="number"
-                                min="1"
-                                max="5"
-                                className="border p-2 w-full mb-4"
-                                value={reviewRating}
-                                onChange={(e) => setReviewRating(e.target.value)}
-                                placeholder="Rating (1-5)"
-                            />
-                            <button className="bg-blue-600 text-white p-2 rounded">
-                                Submit Review
-                            </button>
-                        </form>
-                    )}
                 </>
             ) : (
                 <p>Restaurant not found.</p>

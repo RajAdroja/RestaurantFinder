@@ -10,7 +10,9 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
         address: "",
         zipCode: "",
         description: "",
-        category: "",
+        cuisine: "",
+        foodType: "",
+        priceRange: "",
         photos: [],
     });
 
@@ -34,12 +36,24 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
 
     const handleAddListingSubmit = (e) => {
         e.preventDefault();
-        if (!newListing.name || !newListing.address || !newListing.category) {
-            alert("Name, Address, and Category are required.");
+        const { name, address, zipCode, description, cuisine, foodType, priceRange } = newListing;
+
+        if (!name || !address || !zipCode || !description || !cuisine || !foodType || !priceRange) {
+            alert("Please fill out all required fields.");
             return;
         }
+
         addListing({ ...newListing, id: Date.now() });
-        setNewListing({ name: "", address: "", zipCode: "", description: "", category: "", photos: [] });
+        setNewListing({
+            name: "",
+            address: "",
+            zipCode: "",
+            description: "",
+            cuisine: "",
+            foodType: "",
+            priceRange: "",
+            photos: [],
+        });
         setShowAddModal(false);
     };
 
@@ -56,7 +70,6 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
         <div className="p-6">
             <h1 className="text-4xl font-bold mb-4">Business Owner Dashboard</h1>
 
-            {/* Add Listing Button */}
             <button
                 onClick={() => setShowAddModal(true)}
                 className="bg-green-600 text-white px-4 py-2 rounded mb-4"
@@ -71,15 +84,16 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
                         <p>Address: {restaurant.address}</p>
                         <p>ZIP Code: {restaurant.zipCode}</p>
                         <p>Description: {restaurant.description}</p>
-                        <p>Category: {restaurant.category}</p>
+                        <p>Category: {restaurant.cuisine}</p>
+                        <p>Type of Food: {restaurant.foodType}</p>
+                        <p>Price Range: {restaurant.priceRange}</p>
 
-                        {/* Display Photos */}
                         {restaurant.photos && restaurant.photos.length > 0 && (
                             <div className="grid grid-cols-3 gap-2 mt-4">
                                 {restaurant.photos.map((photo, index) => (
                                     <img
                                         key={index}
-                                        src={typeof photo === "string" ? photo : URL.createObjectURL(photo)} // Handle both File objects and existing URLs
+                                        src={typeof photo === "string" ? photo : URL.createObjectURL(photo)}
                                         alt={`Photo ${index + 1}`}
                                         className="w-full h-24 object-cover rounded"
                                     />
@@ -124,6 +138,7 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
                                 className="border p-2 w-full mb-2"
                                 value={newListing.name}
                                 onChange={handleAddListingChange}
+                                required
                             />
                             <input
                                 type="text"
@@ -132,6 +147,7 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
                                 className="border p-2 w-full mb-2"
                                 value={newListing.address}
                                 onChange={handleAddListingChange}
+                                required
                             />
                             <input
                                 type="text"
@@ -140,6 +156,7 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
                                 className="border p-2 w-full mb-2"
                                 value={newListing.zipCode}
                                 onChange={handleAddListingChange}
+                                required
                             />
                             <textarea
                                 name="description"
@@ -147,23 +164,59 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
                                 className="border p-2 w-full mb-2"
                                 value={newListing.description}
                                 onChange={handleAddListingChange}
+                                required
                             />
-                            <input
-                                type="text"
-                                name="category"
-                                placeholder="Category"
+                            <select
+                                name="cuisine"
                                 className="border p-2 w-full mb-2"
-                                value={newListing.category}
+                                value={newListing.cuisine}
                                 onChange={handleAddListingChange}
-                            />
+                                required
+                            >
+                                <option value="">Type of Cuisine</option>
+                                <option value="Italian">Italian</option>
+                                <option value="Indian">Indian</option>
+                                <option value="Chinese">Chinese</option>
+                                <option value="Korean">Korean</option>
+                                <option value="American">American</option>
+                                <option value="Japanese">Japanese</option>
+                            </select>
+                            <select
+                                name="foodType"
+                                className="border p-2 w-full mb-2"
+                                value={newListing.foodType}
+                                onChange={handleAddListingChange}
+                                required
+                            >
+                                <option value="">Type of Food</option>
+                                <option value="Vegan">Vegan</option>
+                                <option value="Vegetarian">Vegetarian</option>
+                                <option value="Non-Vegetarian">Non-Vegetarian</option>
+                            </select>
+                            <select
+                                name="priceRange"
+                                className="border p-2 w-full mb-2"
+                                value={newListing.priceRange}
+                                onChange={handleAddListingChange}
+                                required
+                            >
+                                <option value="">Average Price Range</option>
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
                             <input
                                 type="file"
                                 multiple
                                 name="photos"
                                 className="border p-2 w-full mb-2"
                                 onChange={handleAddListingChange}
+                                accept="image/*"
                             />
-                            <button type="submit" className="bg-green-600 text-white p-2 rounded w-full">
+                            <button
+                                type="submit"
+                                className="bg-green-600 text-white p-2 rounded w-full"
+                            >
                                 Add Listing
                             </button>
                         </form>
