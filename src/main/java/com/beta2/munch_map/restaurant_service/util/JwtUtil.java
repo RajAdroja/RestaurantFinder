@@ -1,16 +1,18 @@
 package com.beta2.munch_map.restaurant_service.util;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
-    private String secretKey = "G8Ehv!d1$kMpRz&XqLs7H9J5Nv2Y@TfQcU4WxZ3*A"; // Replace with a secure key
+    //@Value("${jwt.secret}")
+    private Key secretKey = Keys.hmacShaKeyFor("G8Ehv!d1$kMpRz&XqLs7H9J5Nv2Y@TfQcU4WxZ3*A".getBytes()); // Replace with a secure key
     private final long expiration = 86400000; // 1 day in milliseconds
 
     public String generateToken(String email, String role) {
@@ -19,7 +21,7 @@ public class JwtUtil {
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(secretKey)
                 .compact();
     }
 
