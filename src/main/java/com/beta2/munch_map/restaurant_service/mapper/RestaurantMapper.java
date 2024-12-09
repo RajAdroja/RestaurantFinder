@@ -6,6 +6,7 @@ import com.beta2.munch_map.restaurant_service.model.User;
 import com.beta2.munch_map.restaurant_service.model.enums.PriceLevel;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.springframework.stereotype.Component;
 
 //public class RestaurantMapper {
 //
@@ -39,6 +40,7 @@ import org.mapstruct.MappingTarget;
 //}
 
 @Mapper(componentModel = "spring")
+@Component
 public interface RestaurantMapper {
 
     // Converts RestaurantDto to Restaurant

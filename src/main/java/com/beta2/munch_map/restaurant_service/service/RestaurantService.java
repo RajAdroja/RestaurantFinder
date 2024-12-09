@@ -49,25 +49,25 @@ public class RestaurantService {
     private S3Service s3Service;
 
 
-    public List<Restaurant> getByName(String name) {
-        return restaurantRepository.findByNameContainingIgnoreCase(name);
-    }
+    // public List<Restaurant> getByName(String name) {
+    //     return restaurantRepository.findByNameContainingIgnoreCase(name);
+    // }
 
-    public List<Restaurant> getByCuisine(String cuisine) {
-        return restaurantRepository.findByCuisineContainingIgnoreCase(cuisine);
-    }
+    // public List<Restaurant> getByCuisine(String cuisineType) {
+    //     return restaurantRepository.findByCuisineTypeContainingIgnoreCase(cuisineType);
+    // }
 
-    public List<Restaurant> getByLocation(String location) {
-        return restaurantRepository.findByLocationContainingIgnoreCase(location);
-    }
+    // public List<Restaurant> getByLocation(String location) {
+    //     return restaurantRepository.findByLocationContainingIgnoreCase(location);
+    // }
 
-    public List<Restaurant> getByRating(double rating) {
-        return restaurantRepository.findByRatingGreaterThanEqual(rating);
-    }
+    // public List<Restaurant> getByRating(double rating) {
+    //     return restaurantRepository.findByRatingGreaterThanEqual(rating);
+    // }
 
-    public List<Restaurant> getByPriceRange(String priceRange) {
-        return restaurantRepository.findByPriceRangeLessThanEqual(priceRange);
-    }
+    // public List<Restaurant> getByPriceRange(String priceRange) {
+    //     return restaurantRepository.findByPriceRangeLessThanEqual(priceRange);
+    // }
 
     public List<Map<String, String>> getByPincode(String pincode) {
         return googleMapsClient.getRestaurantsFromGoogle(pincode);

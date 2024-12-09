@@ -16,42 +16,42 @@ public class SearchServiceController {
     private RestaurantService restaurantService;
 
     // get by Name
-    @GetMapping("/name/{name}")
-    public ResponseEntity<List<Restaurant>> getByName(@PathVariable String name) {
-        List<Restaurant> restaurants = restaurantService.getByName(name);
-        return ResponseEntity.ok(restaurants);
-    }
+    // @GetMapping("/name/{name}")
+    // public ResponseEntity<List<Restaurant>> getByName(@PathVariable String name) {
+    //     List<Restaurant> restaurants = restaurantService.getByName(name);
+    //     return ResponseEntity.ok(restaurants);
+    // }
 
-    // get by Cuisine
-    @GetMapping("/cuisine/{cuisine}")
-    public ResponseEntity<List<Restaurant>> getByCuisine(@PathVariable String cuisine) {
-        List<Restaurant> restaurants = restaurantService.getByCuisine(cuisine);
-        return ResponseEntity.ok(restaurants);
-    }
+    // // get by Cuisine
+    // @GetMapping("/cuisine/{cuisine}")
+    // public ResponseEntity<List<Restaurant>> getByCuisine(@PathVariable String cuisine) {
+    //     List<Restaurant> restaurants = restaurantService.getByCuisine(cuisine);
+    //     return ResponseEntity.ok(restaurants);
+    // }
 
-    // get by Location
-    @GetMapping("/location/{location}")
-    public ResponseEntity<List<Restaurant>> getByLocation(@PathVariable String location) {
-        List<Restaurant> restaurants = restaurantService.getByLocation(location);
-        return ResponseEntity.ok(restaurants);
-    }
+    // // get by Location
+    // @GetMapping("/location/{location}")
+    // public ResponseEntity<List<Restaurant>> getByLocation(@PathVariable String location) {
+    //     List<Restaurant> restaurants = restaurantService.getByLocation(location);
+    //     return ResponseEntity.ok(restaurants);
+    // }
 
-    // get by Rating
-    @GetMapping("/rating/{rating}")
-    public ResponseEntity<?> getByRating(@PathVariable double rating) {
-        if (rating < 0 || rating > 5) {
-            return ResponseEntity.badRequest().body("Rating must be between 0 and 5.");
-        }
-        List<Restaurant> restaurants = restaurantService.getByRating(rating);
-        return ResponseEntity.ok(restaurants);
-    }
+    // // get by Rating
+    // @GetMapping("/rating/{rating}")
+    // public ResponseEntity<?> getByRating(@PathVariable double rating) {
+    //     if (rating < 0 || rating > 5) {
+    //         return ResponseEntity.badRequest().body("Rating must be between 0 and 5.");
+    //     }
+    //     List<Restaurant> restaurants = restaurantService.getByRating(rating);
+    //     return ResponseEntity.ok(restaurants);
+    // }
 
-    // get by Price Range
-    @GetMapping("/price/{priceRange}")
-    public ResponseEntity<List<Restaurant>> getByPriceRange(@PathVariable String priceRange) {
-        List<Restaurant> restaurants = restaurantService.getByPriceRange(priceRange);
-        return ResponseEntity.ok(restaurants);
-    }
+    // // get by Price Range
+    // @GetMapping("/price/{priceRange}")
+    // public ResponseEntity<List<Restaurant>> getByPriceRange(@PathVariable String priceRange) {
+    //     List<Restaurant> restaurants = restaurantService.getByPriceRange(priceRange);
+    //     return ResponseEntity.ok(restaurants);
+    // }
 
     // get by Pincode
     @GetMapping("/pincode/{pincode}")

@@ -10,11 +10,11 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long>, JpaSpecificationExecutor<Restaurant> {
-    List<Restaurant> findByNameContainingIgnoreCase(String name);
-    List<Restaurant> findByLocationContainingIgnoreCase(String location);
-    List<Restaurant> findByCuisineContainingIgnoreCase(String cuisine);
-    List<Restaurant> findByRatingGreaterThanEqual(double rating);
-    List<Restaurant> findByPriceRangeLessThanEqual(String priceRange);
+    //List<Restaurant> findByNameContainingIgnoreCase(String name);
+    //List<Restaurant> findByLocationContainingIgnoreCase(String location);
+    //List<Restaurant> findByCuisineTypeContainingIgnoreCase(String cuisineType);
+    // List<Restaurant> findByRatingGreaterThanEqual(double rating);
+    // List<Restaurant> findByPriceRangeLessThanEqual(String priceRange);
     List<Restaurant> findByOwner(User owner);
 
     @Query("SELECT r FROM Restaurant r WHERE r.isActive = true AND " +
