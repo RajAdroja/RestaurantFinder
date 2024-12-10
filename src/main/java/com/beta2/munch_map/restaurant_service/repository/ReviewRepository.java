@@ -39,7 +39,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("SELECT r FROM Review r WHERE r.restaurant.id = :restaurantId AND r.isActive = true ORDER BY r.createdAt DESC")
     List<Review> findAllActiveByRestaurantId(@Param("restaurantId") Long restaurantId);
 
-    @Query("SELECT r FROM Review r WHERE r.restaurant = :restaurant AND r.isActive = true")
+    @Query("SELECT r FROM Review r WHERE r.restaurant = :restaurant AND r.isActive = :isActive")
     List<Review> findByRestaurantAndIsActive(@Param("restaurant") Restaurant restaurant, @Param("isActive") boolean isActive);
 
 
