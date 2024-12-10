@@ -36,7 +36,7 @@ const SignUpModal = ({ onClose }) => {
     
         try {
             // Make the API call with POST method
-            const response = await fetch("http://localhost:8081/api/auth/register", {
+            const response = await fetch("http://18.191.151.89:8081/api/auth/register", {
                 method: "POST", // Use POST as per backend expectation
                 headers: {
                     "Content-Type": "application/json",

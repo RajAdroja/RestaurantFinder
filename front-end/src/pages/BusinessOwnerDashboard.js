@@ -40,7 +40,7 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
         newListing.photos.forEach((photo) => formData.append("images", photo));
       
         try {
-          await axios.post("http://localhost:8080/api/restaurants/add", formData, {
+          await axios.post("http://18.191.151.89:8081/api/restaurants/add", formData, {
             headers: { "Content-Type": "multipart/form-data" },
           });
           alert("Restaurant added successfully!");
@@ -51,7 +51,7 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
 
       const handleDeleteListing = async (id) => {
         try {
-          await axios.delete(`http://localhost:8080/api/restaurants/${id}`);
+          await axios.delete(`http://18.191.151.89:8081/api/restaurants/${id}`);
           alert("Restaurant deleted successfully!");
         } catch (error) {
           console.error("Error deleting restaurant:", error);
@@ -64,7 +64,7 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
         updatedListing.photos.forEach((photo) => formData.append("newImages", photo));
       
         try {
-          await axios.put(`http://localhost:8080/api/restaurants/${updatedListing.id}`, formData, {
+          await axios.put(`http://18.191.151.89:8081/api/restaurants/${updatedListing.id}`, formData, {
             headers: { "Content-Type": "multipart/form-data" },
           });
           alert("Restaurant updated successfully!");

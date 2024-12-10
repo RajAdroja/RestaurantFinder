@@ -22,7 +22,7 @@ const HomePage = () => {
             });
 
             // Make the API call
-            const response = await fetch(`http://localhost:8080/api/restaurants/search?${queryParams}`);
+            const response = await fetch(`http://18.191.151.89:8081/api/restaurants/search?${queryParams}`);
             
             if (!response.ok) {
                 throw new Error("Failed to fetch search results");
