@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-
+const apiUrl = process.env.REACT_APP_API_URL;
 const EditListingModal = ({ listing, onClose, onSubmit }) => {
     const [formData, setFormData] = useState({
         name: listing.name,
@@ -61,7 +61,7 @@ const EditListingModal = ({ listing, onClose, onSubmit }) => {
 
         try {
             await axios.put(
-                `http://localhost:8081/api/restaurants/${listing.id}`,
+                `${apiUrl}/api/restaurants/${listing.id}`,
                 formDataToSubmit,
                 {
                     headers: {

@@ -19,7 +19,7 @@ const RestaurantDetails = ({ addReview, userRole }) => {
             const token = localStorage.getItem("jwtToken");
             try {
                 
-                const response = await axios.get(`http://localhost:8081/api/restaurants/${restaurantId}`, {
+                const response = await axios.get(`${apiUrl}/api/restaurants/${restaurantId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
