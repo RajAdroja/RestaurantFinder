@@ -269,13 +269,24 @@ public class RestaurantService {
         // Fetch the restaurant
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new IllegalArgumentException("Restaurant not found"));
-
-        // If the user is not an admin, ensure they own the restaurant
-        if (!isAdmin(userDetails) && !restaurant.getOwner().getEmail().equals(userDetails.getUsername())) {
+    
+        // Check if the user is an admin
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ADMIN"));
+    
+        // Check if the user is the owner of the restaurant
+        boolean isOwner = restaurant.getOwner().getEmail().equals(userDetails.getUsername());
+    
+        // Check if the user has the USER role
+        boolean isUser = userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("USER"));
+    
+        // Authorization check: allow access only if the user is an admin, owner, or has the USER role
+        if (!isAdmin && !isOwner && !isUser) {
             throw new SecurityException("You are not authorized to view this restaurant.");
         }
-
-        // Map the restaurant entity to a DTO
+    
+        // Map the restaurant entity to a DTO and return
         return restaurantMapper.toDto(restaurant);
     }
 

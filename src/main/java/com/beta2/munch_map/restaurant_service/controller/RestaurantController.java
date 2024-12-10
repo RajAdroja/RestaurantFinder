@@ -3,26 +3,36 @@ package com.beta2.munch_map.restaurant_service.controller;
 import java.util.HashMap;
 import java.util.List;
 
-import com.beta2.munch_map.restaurant_service.dto.RestaurantDto;
-import com.beta2.munch_map.restaurant_service.model.enums.CuisineType;
-import com.beta2.munch_map.restaurant_service.model.enums.FoodType;
-import com.beta2.munch_map.restaurant_service.model.enums.PriceLevel;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.beta2.munch_map.restaurant_service.dto.RestaurantDto;
 import com.beta2.munch_map.restaurant_service.model.Restaurant;
+import com.beta2.munch_map.restaurant_service.model.enums.CuisineType;
+import com.beta2.munch_map.restaurant_service.model.enums.FoodType;
+import com.beta2.munch_map.restaurant_service.model.enums.PriceLevel;
 import com.beta2.munch_map.restaurant_service.repository.RestaurantRepository;
 import com.beta2.munch_map.restaurant_service.service.RestaurantService;
 import com.beta2.munch_map.restaurant_service.service.ReviewService;
-import org.springframework.web.multipart.MultipartFile;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/restaurants")
@@ -126,7 +136,7 @@ public class RestaurantController {
     }
 
     @GetMapping("/{restaurantId}")
-    @PreAuthorize("hasAuthority('BUSINESS_OWNER') or hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('BUSINESS_OWNER') or hasAuthority('ADMIN') or hasAuthority('USER')")
     public ResponseEntity<RestaurantDto> getRestaurantById(
             @PathVariable Long restaurantId,
             @AuthenticationPrincipal UserDetails userDetails) {
