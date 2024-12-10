@@ -132,9 +132,9 @@ public class RestaurantService {
         }
 
         // Upload each image to S3 and collect the URLs
-        List<String> imageUrls = images.stream()
+        List<String> imageUrls = (images != null && !images.isEmpty()) ? images.stream()
                 .map(s3Service::uploadImage)
-                .toList();
+                .toList() : List.of();
 
         // Map the DTO to an entity
         Restaurant restaurant = restaurantMapper.toEntity(restaurantDto);

@@ -7,6 +7,8 @@ import com.beta2.munch_map.restaurant_service.dto.RestaurantDto;
 import com.beta2.munch_map.restaurant_service.model.enums.CuisineType;
 import com.beta2.munch_map.restaurant_service.model.enums.FoodType;
 import com.beta2.munch_map.restaurant_service.model.enums.PriceLevel;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,16 +66,23 @@ public class RestaurantController {
        return ResponseEntity.ok(response);
    }
 
-    @PostMapping("/add")
+    @PostMapping(value = "/add", consumes = "multipart/form-data")
     @PreAuthorize("hasAuthority('BUSINESS_OWNER')")
     public ResponseEntity<?> addRestaurantWithImages(
-            @RequestPart("restaurant") RestaurantDto restaurantDto,
+            @RequestPart("restaurant") String restaurantJson,
             @RequestPart(value = "images", required = false) List<MultipartFile> images,
             @AuthenticationPrincipal UserDetails userDetails, HttpServletRequest request) {
 //        List<MultipartFile> images = null;
         request.getHeaderNames().asIterator().forEachRemaining(header -> {
             System.out.println(header + ": " + request.getHeader(header));
         });
+        ObjectMapper objectMapper = new ObjectMapper();
+        RestaurantDto restaurantDto;
+        try {
+            restaurantDto = objectMapper.readValue(restaurantJson, RestaurantDto.class);
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().body("Invalid JSON for restaurant");
+        }
         return ResponseEntity.ok(restaurantService.addRestaurantWithImages(restaurantDto, images, userDetails));
     }
 
