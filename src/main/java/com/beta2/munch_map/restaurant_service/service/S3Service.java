@@ -6,9 +6,8 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.UUID;
+import software.amazon.awssdk.core.sync.RequestBody;
 
 @Service
 public class S3Service {
@@ -32,7 +31,7 @@ public class S3Service {
                             .key(fileName)
                             .contentType(file.getContentType())
                             .build(),
-                    Paths.get(file.getOriginalFilename()) // Use a temporary file path for upload
+                    RequestBody.fromInputStream(file.getInputStream(), file.getSize()) // Use a temporary file path for upload
             );
 
             // Return the S3 public URL
