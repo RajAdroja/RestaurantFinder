@@ -87,7 +87,7 @@ const SignUpModal = ({ onClose }) => {
                         onChange={handleChange}
                     />
                     <input
-                        type="text"
+                        type="number"
                         name="zipCode"
                         placeholder="ZIP Code"
                         className="border p-2 w-full mb-2"
