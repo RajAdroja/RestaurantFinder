@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+// Use environment variable for API URL
+const apiUrl = process.env.REACT_APP_API_URL;
+
 const SignUpModal = ({ onClose }) => {
     const [formData, setFormData] = useState({
         fullName: "",
@@ -37,7 +40,7 @@ const SignUpModal = ({ onClose }) => {
 
         try {
             await axios
-                .post("http://18.191.151.89:8081/api/auth/register", payload)
+                .post(`${apiUrl}/api/auth/register`, payload) // Append "/api" to the base URL
                 .then((response) => {
                     const data = response.data;
                     console.log("API Response:", data);
