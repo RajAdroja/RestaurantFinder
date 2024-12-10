@@ -14,22 +14,28 @@ const HomePage = () => {
 
     const handleSearch = async () => {
         try {
-            // Construct the query parameters for the API request
-            const queryParams = new URLSearchParams({
-                searchQuery,
-                cuisine: filters.cuisine,
-                foodType: filters.foodType,
-                priceRange: filters.priceRange,
-                rating: filters.rating,
-            });
-
-            // Make the API call
-            const response = await fetch(`${apiUrl}/api/restaurants/search?${queryParams}`);
-            
+            let response;
+            if (/^\d{5}$/.test(searchQuery)) {
+                // Hit the pincode API if input is a 5-digit pincode
+                response = await fetch(`${apiUrl}/api/search/pincode/${searchQuery}`);
+            } else {
+                // Construct query parameters for regular search
+                const queryParams = new URLSearchParams({
+                    name: searchQuery,
+                    cuisine: filters.cuisine,
+                    foodType: filters.foodType,
+                    priceRange: filters.priceRange,
+                    averageRating: filters.rating,
+                });
+    
+                // Hit the regular search API
+                response = await fetch(`${apiUrl}/api/restaurants/search?${queryParams}`);
+            }
+    
             if (!response.ok) {
                 throw new Error("Failed to fetch search results");
             }
-
+    
             const results = await response.json();
             setSearchResults(results);
         } catch (error) {
@@ -37,6 +43,7 @@ const HomePage = () => {
             setSearchResults([]); // Clear results on error
         }
     };
+    
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
@@ -50,7 +57,6 @@ const HomePage = () => {
                 Explore restaurants, manage listings, and provide feedback all in one place!
             </p>
 
-            {/* Search Bar */}
             <div className="mb-6">
                 <input
                     type="text"
@@ -67,7 +73,6 @@ const HomePage = () => {
                 </button>
             </div>
 
-
             <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mb-4">
                 <select name="cuisine" className="border p-2" onChange={handleFilterChange}>
                     <option value="">Select Cuisine</option>
@@ -76,19 +81,18 @@ const HomePage = () => {
                     <option value="INDIAN">INDIAN</option>
                     <option value="MEXICAN">MEXICAN</option>
                     <option value="AMERICAN">AMERICAN</option>
-
                 </select>
                 <select name="foodType" className="border p-2" onChange={handleFilterChange}>
                     <option value="">Select Food Type</option>
-                    <option value="Vegan">Vegan</option>
-                    <option value="Vegetarian">Vegetarian</option>
-                    <option value="Non-Vegetarian">Non-Vegetarian</option>
+                    <option value="VEGAN">Vegan</option>
+                    <option value="VEGETARIAN">Vegetarian</option>
+                    <option value="NON_VEGETARIAN">Non-Vegetarian</option>
                 </select>
                 <select name="priceRange" className="border p-2" onChange={handleFilterChange}>
                     <option value="">Select Price Range</option>
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HIGH">High</option>
                 </select>
                 <select name="rating" className="border p-2" onChange={handleFilterChange}>
                     <option value="">Select Rating</option>
@@ -100,7 +104,6 @@ const HomePage = () => {
                 </select>
             </div>
 
-            {/* Search Results */}
             <div>
                 {searchResults.length > 0 ? (
                     <ul className="text-left max-w-md mx-auto">
