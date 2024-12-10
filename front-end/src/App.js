@@ -9,7 +9,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import RestaurantDetails from "./pages/RestaurantDetails";
 import UserRestaurantDetails from "./pages/UserRestaurantDetails";
 import axios from "axios";
-
+const apiUrl = process.env.REACT_APP_API_URL;
 const App = () => {
     const [listings, setListings] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -23,7 +23,7 @@ const App = () => {
 
 	const fetchListings = async () => {
                     try {
-                        const response = await axios.get("http://localhost:8081/api/restaurants/owner", {
+                        const response = await axios.get(`${apiUrl}/api/restaurants/owner`, {
                             headers: {
                                 Authorization: `Bearer ${localStorage.getItem("jwtToken")}`, // Add token if required
                             },
