@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import com.beta2.munch_map.restaurant_service.util.GoogleMapsClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,10 +180,16 @@ public class RestaurantService {
     }
 
     private void handleImageUpdates(Restaurant restaurant, RestaurantDto restaurantDto) {
+
+        if (restaurant.getPhotos() == null) {
+            restaurant.setPhotos(new ArrayList<>());
+        }
+
         // Remove specified images
-        if (restaurantDto.getImagesToRemove() != null) {
+        if (restaurantDto.getImagesToRemove() != null && !restaurantDto.getImagesToRemove().isEmpty()) {
             // Delete images from S3
             restaurantDto.getImagesToRemove().forEach(s3Service::deleteImage);
+            // Remove them from the photos list in Restaurant
             restaurant.getPhotos().removeAll(restaurantDto.getImagesToRemove());
         }
 
@@ -269,13 +277,24 @@ public class RestaurantService {
         // Fetch the restaurant
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new IllegalArgumentException("Restaurant not found"));
-
-        // If the user is not an admin, ensure they own the restaurant
-        if (!isAdmin(userDetails) && !restaurant.getOwner().getEmail().equals(userDetails.getUsername())) {
+    
+        // Check if the user is an admin
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ADMIN"));
+    
+        // Check if the user is the owner of the restaurant
+        boolean isOwner = restaurant.getOwner().getEmail().equals(userDetails.getUsername());
+    
+        // Check if the user has the USER role
+        boolean isUser = userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("USER"));
+    
+        // Authorization check: allow access only if the user is an admin, owner, or has the USER role
+        if (!isAdmin && !isOwner && !isUser) {
             throw new SecurityException("You are not authorized to view this restaurant.");
         }
-
-        // Map the restaurant entity to a DTO
+    
+        // Map the restaurant entity to a DTO and return
         return restaurantMapper.toDto(restaurant);
     }
 

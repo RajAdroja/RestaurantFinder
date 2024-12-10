@@ -75,7 +75,8 @@ const RestaurantDetails = ({ addReview, userRole }) => {
                                     <img
                                         src={photo}
                                         alt={`Restaurant Photo ${index + 1}`}
-                                        className="w-full h-24 object-cover rounded cursor-pointer"
+                                        className="w-full h-auto object-cover rounded shadow-md"
+                                        style={{ maxHeight: "200px", maxWidth: "300px", objectFit: "cover" }}
                                     />
                                 </a>
                             ))}

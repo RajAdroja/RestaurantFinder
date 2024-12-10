@@ -10,6 +10,8 @@ import RestaurantDetails from "./pages/RestaurantDetails";
 import UserRestaurantDetails from "./pages/UserRestaurantDetails";
 import axios from "axios";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 const App = () => {
     const [listings, setListings] = useState([]);
 
@@ -21,6 +23,27 @@ const App = () => {
         2: [],
     });
 
+	const fetchListings = async () => {
+                    try {
+                        const response = await axios.get(`${apiUrl}/api/restaurants/owner`, {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem("jwtToken")}`, // Add token if required
+                            },
+                        });
+                        setListings(response.data);
+                        console.log(response.data)
+                    } catch (error) {
+                        console.error("Error fetching listings:", error);
+                    }
+                };
+     const initializeData = async () => {
+             setIsLoading(true);
+             try {
+                 await fetchListings();
+             } finally {
+                 setIsLoading(false); // Ensure loading state is reset
+             }
+         };
 	useEffect(() => {
             const fetchListings = async () => {
                 try {
@@ -60,6 +83,22 @@ const App = () => {
         setListings((prevListings) =>
             prevListings.filter((listing) => listing.id !== listingId)
         );
+        const token = localStorage.getItem("jwtToken"); // Retrieve the JWT token
+                  if (!token) {
+                      alert("User not authenticated. Please log in.");
+                      return;
+                  }
+
+                try {
+                  axios.delete(`${apiUrl}/api/restaurants/${listingId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Pass the JWT token
+                        },
+                    });
+                  alert("Restaurant deleted successfully!");
+                } catch (error) {
+                  console.error("Error deleting restaurant:", error);
+                }
     };
 
     const addListing = (newListing) => {
