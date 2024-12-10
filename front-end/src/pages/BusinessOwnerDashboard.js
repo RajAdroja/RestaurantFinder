@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import EditListingModal from "../components/EditListingModal";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+const apiUrl = process.env.REACT_APP_API_URL;
+
 const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addListing }) => {
     const [editListing, setEditListing] = useState(null);
     const [showAddModal, setShowAddModal] = useState(false);
@@ -46,7 +48,7 @@ const handleAddListingSubmit = async (e) => {
         photos.forEach((photo) => formData.append("images", photo));
 
         try {
-            await axios.post("http://localhost:8081/api/restaurants/add", formData, {
+            await axios.post(`${apiUrl}/api/restaurants/add`, formData, {
                 headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}` }
             });
             alert("Restaurant added successfully!");
@@ -74,7 +76,7 @@ const handleAddListingSubmit = async (e) => {
 
       const handleDeleteListing = async (id) => {
         try {
-          await axios.delete(`http://18.191.151.89:8081/api/restaurants/${id}`);
+          await axios.delete(`${apiUrl}/api/restaurants/${id}`);
           alert("Restaurant deleted successfully!");
         } catch (error) {
           console.error("Error deleting restaurant:", error);
@@ -87,7 +89,7 @@ const handleAddListingSubmit = async (e) => {
         updatedListing.photos.forEach((photo) => formData.append("newImages", photo));
       
         try {
-          await axios.put(`http://18.191.151.89:8081/api/restaurants/${updatedListing.id}`, formData, {
+          await axios.put(`${apiUrl}/api/restaurants/${updatedListing.id}`, formData, {
             headers: { "Content-Type": "multipart/form-data" },
           });
           alert("Restaurant updated successfully!");

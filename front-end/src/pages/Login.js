@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+const apiUrl = process.env.REACT_APP_API_URL;
 
 function Login({ setIsLoggedIn, setUserRole }) {
   const [email, setEmail] = useState("");
@@ -12,7 +13,7 @@ function Login({ setIsLoggedIn, setUserRole }) {
 
     try {
       await axios
-        .post("http://18.191.151.89:8081/api/auth/login", { email, password })
+        .post(`${apiUrl}/api/auth/login`, { email, password })
         .then((response) => {
           const { token, role } = response.data;
 
