@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import EditListingModal from "../components/EditListingModal";
 import { useNavigate } from "react-router-dom";
-
+import axios from 'axios';
 const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addListing }) => {
     const [editListing, setEditListing] = useState(null);
     const [showAddModal, setShowAddModal] = useState(false);
@@ -34,33 +34,44 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
         }
     };
 
-    const handleAddListingSubmit = (e) => {
-        e.preventDefault();
-        const { name, address, zipCode, description, cuisine, foodType, priceRange } = newListing;
-
-        if (!name || !address || !zipCode || !description || !cuisine || !foodType || !priceRange) {
-            alert("Please fill out all required fields.");
-            return;
+    const handleAddListingSubmit = async () => {
+        const formData = new FormData();
+        formData.append("restaurant", JSON.stringify(newListing));
+        newListing.photos.forEach((photo) => formData.append("images", photo));
+      
+        try {
+          await axios.post("http://localhost:8080/api/restaurants/add", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          alert("Restaurant added successfully!");
+        } catch (error) {
+          console.error("Error adding restaurant:", error);
         }
+      };
 
-        addListing({ ...newListing, id: Date.now() });
-        setNewListing({
-            name: "",
-            address: "",
-            zipCode: "",
-            description: "",
-            cuisine: "",
-            foodType: "",
-            priceRange: "",
-            photos: [],
-        });
-        setShowAddModal(false);
-    };
+      const handleDeleteListing = async (id) => {
+        try {
+          await axios.delete(`http://localhost:8080/api/restaurants/${id}`);
+          alert("Restaurant deleted successfully!");
+        } catch (error) {
+          console.error("Error deleting restaurant:", error);
+        }
+      };
 
-    const handleEditSubmit = (updatedListing) => {
-        updateListing(updatedListing);
-        setEditListing(null);
-    };
+      const handleEditSubmit = async (updatedListing) => {
+        const formData = new FormData();
+        formData.append("restaurant", JSON.stringify(updatedListing));
+        updatedListing.photos.forEach((photo) => formData.append("newImages", photo));
+      
+        try {
+          await axios.put(`http://localhost:8080/api/restaurants/${updatedListing.id}`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          alert("Restaurant updated successfully!");
+        } catch (error) {
+          console.error("Error updating restaurant:", error);
+        }
+      };
 
     const viewRestaurantDetails = (restaurantId) => {
         navigate(`/restaurant/${restaurantId}`);
