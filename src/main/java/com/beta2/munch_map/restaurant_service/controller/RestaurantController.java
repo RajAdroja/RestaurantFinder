@@ -7,6 +7,7 @@ import com.beta2.munch_map.restaurant_service.dto.RestaurantDto;
 import com.beta2.munch_map.restaurant_service.model.enums.CuisineType;
 import com.beta2.munch_map.restaurant_service.model.enums.FoodType;
 import com.beta2.munch_map.restaurant_service.model.enums.PriceLevel;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -67,9 +68,12 @@ public class RestaurantController {
     @PreAuthorize("hasAuthority('BUSINESS_OWNER')")
     public ResponseEntity<?> addRestaurantWithImages(
             @RequestPart("restaurant") RestaurantDto restaurantDto,
-            @RequestPart("images") List<MultipartFile> images,
-            @AuthenticationPrincipal UserDetails userDetails) {
-
+            @RequestPart(value = "images", required = false) List<MultipartFile> images,
+            @AuthenticationPrincipal UserDetails userDetails, HttpServletRequest request) {
+//        List<MultipartFile> images = null;
+        request.getHeaderNames().asIterator().forEachRemaining(header -> {
+            System.out.println(header + ": " + request.getHeader(header));
+        });
         return ResponseEntity.ok(restaurantService.addRestaurantWithImages(restaurantDto, images, userDetails));
     }
 
