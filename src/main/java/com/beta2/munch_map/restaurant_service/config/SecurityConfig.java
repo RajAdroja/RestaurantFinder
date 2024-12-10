@@ -30,6 +30,7 @@ public class SecurityConfig {
 //                .cors() // Enable CORS
 //                .and()
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/health").permitAll()
                         .requestMatchers("/api/restaurants/search").permitAll()
                         .requestMatchers("/api/search/pincode/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll() // Public endpoints
