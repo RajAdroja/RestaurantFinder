@@ -76,7 +76,7 @@ const handleAddListingSubmit = async (e) => {
 
       const handleDeleteListing = async (id) => {
         try {
-          await axios.delete(`${apiUrl}/api/restaurants/${id}`);
+          await axios.delete(`${apiUrl}/api/restaurants/delete/${id}`);
           alert("Restaurant deleted successfully!");
         } catch (error) {
           console.error("Error deleting restaurant:", error);

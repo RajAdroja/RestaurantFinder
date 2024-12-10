@@ -252,7 +252,7 @@ public class RestaurantService {
         }
 
         // Fetch all restaurants
-        List<Restaurant> restaurants = restaurantRepository.findAll();
+        List<Restaurant> restaurants = restaurantRepository.findAllByIsActive(true);
 
         // Map entities to DTOs
         return restaurants.stream()

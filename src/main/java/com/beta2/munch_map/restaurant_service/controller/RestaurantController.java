@@ -144,7 +144,7 @@ public class RestaurantController {
         return ResponseEntity.ok(restaurantDto);
     }
 
-    @DeleteMapping("/{restaurantId}")
+    @DeleteMapping("/delete/{restaurantId}")
     @PreAuthorize("hasAuthority('BUSINESS_OWNER') or hasAuthority('ADMIN')")
     public ResponseEntity<?> deleteRestaurant(
             @PathVariable Long restaurantId,

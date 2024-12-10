@@ -30,7 +30,7 @@ const AdminDashboard = () => {
     try {
       const apiUrl = process.env.REACT_APP_API_URL; // Retrieve API URL from .env
       const token = localStorage.getItem("jwtToken"); // Get JWT token from localStorage
-      await axios.delete(`${apiUrl}/api/restaurants/${id}`, {
+      await axios.delete(`${apiUrl}/api/restaurants/delete/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
