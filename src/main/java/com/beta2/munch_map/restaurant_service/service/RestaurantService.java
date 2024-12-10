@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import com.beta2.munch_map.restaurant_service.util.GoogleMapsClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,10 +180,16 @@ public class RestaurantService {
     }
 
     private void handleImageUpdates(Restaurant restaurant, RestaurantDto restaurantDto) {
+
+        if (restaurant.getPhotos() == null) {
+            restaurant.setPhotos(new ArrayList<>());
+        }
+
         // Remove specified images
-        if (restaurantDto.getImagesToRemove() != null) {
+        if (restaurantDto.getImagesToRemove() != null && !restaurantDto.getImagesToRemove().isEmpty()) {
             // Delete images from S3
             restaurantDto.getImagesToRemove().forEach(s3Service::deleteImage);
+            // Remove them from the photos list in Restaurant
             restaurant.getPhotos().removeAll(restaurantDto.getImagesToRemove());
         }
 

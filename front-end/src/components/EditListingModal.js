@@ -1,7 +1,7 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 const EditListingModal = ({ listing, onClose, onSubmit }) => {
-    // Initialize state with existing listing data
     const [formData, setFormData] = useState({
         name: listing.name,
         address: listing.address,
@@ -10,7 +10,9 @@ const EditListingModal = ({ listing, onClose, onSubmit }) => {
         cuisineType: listing.cuisineType || "",
         foodType: listing.foodType || "",
         priceLevel: listing.priceLevel || "",
-        photos: listing.photos || [],
+        photos: listing.photos || [], // Existing photos
+        imagesToRemove: [], // Photos to be removed
+        newImages: [], // Photos to be uploaded
     });
 
     // Handle input changes
@@ -19,17 +21,62 @@ const EditListingModal = ({ listing, onClose, onSubmit }) => {
         if (type === "file") {
             setFormData((prev) => ({
                 ...prev,
-                photos: [...prev.photos, ...Array.from(files)],
+                newImages: [...prev.newImages, ...Array.from(files)],
             }));
         } else {
             setFormData((prev) => ({ ...prev, [name]: value }));
         }
     };
 
+    // Handle removing an existing photo
+    const handleRemovePhoto = (photoUrl) => {
+        setFormData((prev) => ({
+            ...prev,
+            imagesToRemove: [...prev.imagesToRemove, photoUrl],
+            photos: prev.photos.filter((photo) => photo !== photoUrl),
+        }));
+    };
+
     // Handle form submission
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        onSubmit({ ...listing, ...formData });
+
+        // Prepare FormData for the API call
+        const formDataToSubmit = new FormData();
+        formDataToSubmit.append("restaurant", JSON.stringify({
+            name: formData.name,
+            address: formData.address,
+            pincode: formData.pincode,
+            description: formData.description,
+            cuisineType: formData.cuisineType,
+            foodType: formData.foodType,
+            priceLevel: formData.priceLevel,
+            imagesToRemove: formData.imagesToRemove,
+        }));
+
+        // Append new images to the FormData
+        formData.newImages.forEach((image) => {
+            formDataToSubmit.append("newImages", image);
+        });
+
+        try {
+            await axios.put(
+                `http://localhost:8081/api/restaurants/${listing.id}`,
+                formDataToSubmit,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                        Authorization: `Bearer ${localStorage.getItem("jwtToken")}`, // Include token if required
+                    },
+                }
+            );
+            alert("Restaurant updated successfully!");
+            onSubmit(); // Trigger the parent callback to refresh data
+            onClose(); // Close the modal
+        } catch (error) {
+            console.error("Error updating restaurant:", error);
+            alert("Failed to update restaurant. Please try again.");
+        }
     };
 
     return (
@@ -111,14 +158,37 @@ const EditListingModal = ({ listing, onClose, onSubmit }) => {
                         <option value="MEDIUM">Medium</option>
                         <option value="HIGH">High</option>
                     </select>
+
+                    {/* Existing Photos */}
+                    <div className="grid grid-cols-3 gap-2 mt-4">
+                        {formData.photos.map((photo, index) => (
+                            <div key={index} className="relative">
+                                <img
+                                    src={photo}
+                                    alt={`Photo ${index + 1}`}
+                                    className="w-full h-24 object-cover rounded shadow-md"
+                                />
+                                <button
+                                    type="button"
+                                    className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 text-xs"
+                                    onClick={() => handleRemovePhoto(photo)}
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Add New Images */}
                     <input
                         type="file"
                         multiple
-                        name="photos"
+                        name="newImages"
                         className="border p-2 w-full mb-2"
                         onChange={handleChange}
                         accept="image/*"
                     />
+
                     <button
                         type="submit"
                         className="bg-green-600 text-white p-2 rounded w-full"

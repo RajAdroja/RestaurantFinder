@@ -4,9 +4,13 @@ import com.beta2.munch_map.restaurant_service.dto.RestaurantDto;
 import com.beta2.munch_map.restaurant_service.model.Restaurant;
 import com.beta2.munch_map.restaurant_service.model.User;
 import com.beta2.munch_map.restaurant_service.model.enums.PriceLevel;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
 
 //public class RestaurantMapper {
 //
@@ -50,5 +54,20 @@ public interface RestaurantMapper {
     RestaurantDto toDto(Restaurant entity);
 
     // Updates an existing Restaurant entity from RestaurantDto
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "photos", ignore = true) // Ignore 'photos' field in the generated method
     void updateEntityFromDto(RestaurantDto dto, @MappingTarget Restaurant entity);
+
+    @AfterMapping
+    default void handlePhotos(RestaurantDto dto, @MappingTarget Restaurant entity) {
+        if (entity.getPhotos() == null) {
+            entity.setPhotos(new ArrayList<>());
+        }
+
+        // Replace photos with DTO-provided list if available
+        if (dto.getPhotos() != null) {
+            entity.getPhotos().clear();
+            entity.getPhotos().addAll(dto.getPhotos());
+        }
+    }
 }

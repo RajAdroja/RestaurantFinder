@@ -131,7 +131,8 @@ const handleAddListingSubmit = async (e) => {
                                         key={index}
                                         src={typeof photo === "string" ? photo : URL.createObjectURL(photo)}
                                         alt={`Photo ${index + 1}`}
-                                        className="w-full h-24 object-cover rounded"
+                                        className="w-full h-auto object-cover rounded shadow-md"
+                                        style={{ maxHeight: "200px", maxWidth: "300px", objectFit: "cover" }}
                                     />
                                 ))}
                             </div>
@@ -269,7 +270,7 @@ const handleAddListingSubmit = async (e) => {
             {editListing && (
                 <EditListingModal
                     listing={editListing}
-                    onClose={() => setEditListing(null)}
+                    onClose={() => window.location.reload()}
                     onSubmit={handleEditSubmit}
                 />
             )}
