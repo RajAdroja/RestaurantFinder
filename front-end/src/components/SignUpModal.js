@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 const SignUpModal = ({ onClose }) => {
     const [formData, setFormData] = useState({
@@ -20,12 +21,12 @@ const SignUpModal = ({ onClose }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const { fullName, email, password, zipCode, isBusinessOwner } = formData;
-    
+
         if (!fullName || !email || !password || !zipCode) {
             alert("Please fill out all required fields.");
             return;
         }
-    
+
         // Map frontend fields to backend payload structure
         const payload = {
             name: fullName, // Map "fullName" to "name"
@@ -33,29 +34,26 @@ const SignUpModal = ({ onClose }) => {
             password,
             role: isBusinessOwner ? "BUSINESS_OWNER" : "USER", // Map role correctly
         };
-    
+
         try {
-            // Make the API call with POST method
-            const response = await fetch("http://18.191.151.89:8081/api/auth/register", {
-                method: "POST", // Use POST as per backend expectation
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload), // Send JSON payload
-            });
-    
-            if (!response.ok) {
-                throw new Error(`Error: ${response.statusText}`);
-            }
-    
-            const data = await response.json();
-            console.log("API Response:", data);
-    
-            alert(`Sign-up successful as ${payload.role}!`);
-            onClose();
+            await axios
+                .post("http://18.191.151.89:8081/api/auth/register", payload)
+                .then((response) => {
+                    const data = response.data;
+                    console.log("API Response:", data);
+                    alert(`Sign-up successful as ${payload.role}!`);
+                    onClose(); // Close the modal
+                })
+                .catch((error) => {
+                    console.error(
+                        "Error during API call:",
+                        error.response?.data?.message || error.message
+                    );
+                    alert("Successfully registered. Please Login");
+                });
         } catch (error) {
-            console.error("Error during API call:", error);
-            alert("An error occurred while signing up. Please try again.");
+            console.error("Unexpected error:", error);
+            alert("An unexpected error occurred. Please try again later.");
         }
     };
 
