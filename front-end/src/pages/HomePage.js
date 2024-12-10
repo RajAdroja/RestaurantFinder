@@ -10,22 +10,30 @@ const HomePage = () => {
         rating: "",
     });
 
-    const handleSearch = () => {
-        // Simulated search results for demonstration purposes
-        const results = [
-            { id: 1, name: "The Food Place", category: "Italian", rating: 4.5 },
-            { id: 2, name: "Vegan Delight", category: "Vegan", rating: 4.0 },
-        ];
-        const filteredResults = results.filter((restaurant) => {
-            return (
-                restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-                (filters.cuisine ? restaurant.category === filters.cuisine : true) &&
-                (filters.foodType ? restaurant.foodType === filters.foodType : true) &&
-                (filters.priceRange ? restaurant.price === filters.priceRange : true) &&
-                (filters.rating ? Math.floor(restaurant.rating) >= parseInt(filters.rating) : true)
-            );
-        });
-        setSearchResults(filteredResults);
+    const handleSearch = async () => {
+        try {
+            // Construct the query parameters for the API request
+            const queryParams = new URLSearchParams({
+                searchQuery,
+                cuisine: filters.cuisine,
+                foodType: filters.foodType,
+                priceRange: filters.priceRange,
+                rating: filters.rating,
+            });
+
+            // Make the API call
+            const response = await fetch(`http://localhost:8080/api/restaurants/search?${queryParams}`);
+            
+            if (!response.ok) {
+                throw new Error("Failed to fetch search results");
+            }
+
+            const results = await response.json();
+            setSearchResults(results);
+        } catch (error) {
+            console.error("Error fetching search results:", error);
+            setSearchResults([]); // Clear results on error
+        }
     };
 
     const handleFilterChange = (e) => {
@@ -57,12 +65,16 @@ const HomePage = () => {
                 </button>
             </div>
 
+
             <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mb-4">
                 <select name="cuisine" className="border p-2" onChange={handleFilterChange}>
                     <option value="">Select Cuisine</option>
-                    <option value="Italian">Italian</option>
-                    <option value="Vegan">Vegan</option>
-                    <option value="Indian">Indian</option>
+                    <option value="CHINESE">CHINESE</option>
+                    <option value="ITALIAN">ITALIAN</option>
+                    <option value="INDIAN">INDIAN</option>
+                    <option value="MEXICAN">MEXICAN</option>
+                    <option value="AMERICAN">AMERICAN</option>
+
                 </select>
                 <select name="foodType" className="border p-2" onChange={handleFilterChange}>
                     <option value="">Select Food Type</option>
@@ -86,7 +98,6 @@ const HomePage = () => {
                 </select>
             </div>
 
-
             {/* Search Results */}
             <div>
                 {searchResults.length > 0 ? (
@@ -95,9 +106,9 @@ const HomePage = () => {
                             <li key={restaurant.id} className="mb-4 border p-4 rounded">
                                 <h3 className="text-lg font-bold">{restaurant.name}</h3>
                                 <p>Category: {restaurant.category}</p>
-                                <p>Rating: {restaurant.rating}</p>
-                                <p>Price: {restaurant.price}</p>
-                                <p>Food Type: {restaurant.foodType}</p>
+                                {restaurant.price && <p>Price: {restaurant.price}</p>}
+                                {restaurant.foodType && <p>Food Type: {restaurant.foodType}</p>}
+                                {restaurant.rating && <p>Rating: {restaurant.rating}</p>}
                             </li>
                         ))}
                     </ul>

@@ -58,10 +58,12 @@ const UserDashboard = ({ listings }) => {
 
             <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mb-4">
                 <select name="cuisine" className="border p-2" onChange={handleFilterChange}>
-                    <option value="">Select Cuisine</option>
-                    <option value="Italian">Italian</option>
-                    <option value="Vegan">Vegan</option>
-                    <option value="Indian">Indian</option>
+                <option value="">Select Cuisine</option>
+                    <option value="CHINESE">CHINESE</option>
+                    <option value="ITALIAN">ITALIAN</option>
+                    <option value="INDIAN">INDIAN</option>
+                    <option value="MEXICAN">MEXICAN</option>
+                    <option value="AMERICAN">AMERICAN</option>
                 </select>
                 <select name="foodType" className="border p-2" onChange={handleFilterChange}>
                     <option value="">Select Food Type</option>
