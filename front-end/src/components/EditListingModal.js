@@ -81,12 +81,11 @@ const EditListingModal = ({ listing, onClose, onSubmit }) => {
                         required
                     >
                         <option value="">Type of Cuisine</option>
-                        <option value="Italian">Italian</option>
-                        <option value="Indian">Indian</option>
-                        <option value="Chinese">Chinese</option>
-                        <option value="Korean">Korean</option>
-                        <option value="American">American</option>
-                        <option value="Japanese">Japanese</option>
+                        <option value="ITALIAN">Italian</option>
+                        <option value="INDIAN">Indian</option>
+                        <option value="CHINESE">Chinese</option>
+                        <option value="MEXICAN">Mexican</option>
+                        <option value="AMERICAN">American</option>
                     </select>
                     <select
                         name="foodType"
@@ -96,9 +95,9 @@ const EditListingModal = ({ listing, onClose, onSubmit }) => {
                         required
                     >
                         <option value="">Type of Food</option>
-                        <option value="Vegan">Vegan</option>
-                        <option value="Vegetarian">Vegetarian</option>
-                        <option value="Non-Vegetarian">Non-Vegetarian</option>
+                        <option value="VEGAN">Vegan</option>
+                        <option value="VEGETARIAN">Vegetarian</option>
+                        <option value="NON_VEGETARIAN">Non-Vegetarian</option>
                     </select>
                     <select
                         name="priceRange"
@@ -108,9 +107,9 @@ const EditListingModal = ({ listing, onClose, onSubmit }) => {
                         required
                     >
                         <option value="">Average Price Range</option>
-                        <option value="Low">Low</option>
-                        <option value="Medium">Medium</option>
-                        <option value="High">High</option>
+                        <option value="LOW">Low</option>
+                        <option value="MEDIUM">Medium</option>
+                        <option value="HIGH">High</option>
                     </select>
                     <input
                         type="file"

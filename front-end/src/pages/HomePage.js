@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 const HomePage = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState([]);
