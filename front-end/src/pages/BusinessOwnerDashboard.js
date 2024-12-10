@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import EditListingModal from "../components/EditListingModal";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+const apiUrl = process.env.REACT_APP_API_URL;
+
 const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addListing }) => {
     const [editListing, setEditListing] = useState(null);
     const [showAddModal, setShowAddModal] = useState(false);
     const [newListing, setNewListing] = useState({
         name: "",
         address: "",
-        zipCode: "",
+        pinCode: "",
         description: "",
         cuisine: "",
         foodType: "",
@@ -40,7 +42,7 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
         newListing.photos.forEach((photo) => formData.append("images", photo));
       
         try {
-          await axios.post("http://18.191.151.89:8081/api/restaurants/add", formData, {
+          await axios.post(`${apiUrl}/api/restaurants/add`, formData, {
             headers: { "Content-Type": "multipart/form-data" },
           });
           alert("Restaurant added successfully!");
@@ -51,7 +53,7 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
 
       const handleDeleteListing = async (id) => {
         try {
-          await axios.delete(`http://18.191.151.89:8081/api/restaurants/${id}`);
+          await axios.delete(`${apiUrl}/api/restaurants/${id}`);
           alert("Restaurant deleted successfully!");
         } catch (error) {
           console.error("Error deleting restaurant:", error);
@@ -64,7 +66,7 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
         updatedListing.photos.forEach((photo) => formData.append("newImages", photo));
       
         try {
-          await axios.put(`http://18.191.151.89:8081/api/restaurants/${updatedListing.id}`, formData, {
+          await axios.put(`${apiUrl}/api/restaurants/${updatedListing.id}`, formData, {
             headers: { "Content-Type": "multipart/form-data" },
           });
           alert("Restaurant updated successfully!");
@@ -93,7 +95,7 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
                     <li key={restaurant.id} className="border p-4 rounded">
                         <h3 className="text-lg font-bold">{restaurant.name}</h3>
                         <p>Address: {restaurant.address}</p>
-                        <p>ZIP Code: {restaurant.zipCode}</p>
+                        <p>ZIP Code: {restaurant.pinCode}</p>
                         <p>Description: {restaurant.description}</p>
                         <p>Category: {restaurant.cuisine}</p>
                         <p>Type of Food: {restaurant.foodType}</p>
@@ -162,10 +164,10 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
                             />
                             <input
                                 type="text"
-                                name="zipCode"
+                                name="pinCode"
                                 placeholder="ZIP Code"
                                 className="border p-2 w-full mb-2"
-                                value={newListing.zipCode}
+                                value={newListing.pinCode}
                                 onChange={handleAddListingChange}
                                 required
                             />
