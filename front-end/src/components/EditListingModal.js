@@ -61,7 +61,7 @@ const EditListingModal = ({ listing, onClose, onSubmit }) => {
 
         try {
             await axios.put(
-                `http://localhost:8081/api/restaurants/${listing.id}`,
+                `${apiUrl}/api/restaurants/${listing.id}`,
                 formDataToSubmit,
                 {
                     headers: {

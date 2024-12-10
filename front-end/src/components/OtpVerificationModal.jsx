@@ -19,7 +19,7 @@ const OtpVerificationModal = ({ onClose, email }) => {
         try {
             const payload = { email, otp };
             await axios
-                .post("http://localhost:8081/api/auth/verify-otp", payload)
+                .post(`${apiUrl}/api/auth/verify-otp`, payload)
                 .then((response) => {
                     console.log("OTP verified successfully:", response.data);
                     alert("Your email has been verified successfully!");

@@ -47,7 +47,7 @@ const App = () => {
 	useEffect(() => {
             const fetchListings = async () => {
                 try {
-                    const response = await axios.get("http://localhost:8081/api/restaurants/owner", {
+                    const response = await axios.get(`${apiUrl}/api/restaurants/owner`, {
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem("jwtToken")}`, // Add token if required
                         },
