@@ -23,6 +23,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable()) // CSRF disabled for APIs (REST use case)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/restaurants/search").permitAll()
                         .requestMatchers("/api/auth/**").permitAll() // Public endpoints
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN") // Admin-only access
                         .requestMatchers("/api/restaurants/**").hasAnyAuthority("USER", "BUSINESS_OWNER", "ADMIN") // Restaurant access

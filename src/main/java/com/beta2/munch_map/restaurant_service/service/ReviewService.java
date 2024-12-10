@@ -74,6 +74,7 @@ public class ReviewService {
 
         // Save and return the review as DTO
         Review savedReview = reviewRepository.save(review);
+        updateRestaurantAverageRating(restaurant);
         return reviewMapper.toDto(savedReview);
     }
 
@@ -158,32 +159,21 @@ public class ReviewService {
     /**
      * Updates the average rating of a restaurant based on its reviews.
      */
-    private void updateRestaurantAverageRating(Long restaurantId) {
-        logger.info("Starting average rating update for restaurant ID: {}", restaurantId);
-        
-        try {
-            // Calculate average rating
-            Double avgRating = reviewRepository.getAverageRatingForRestaurant(restaurantId);
-            logger.info("Raw average rating calculated: {}", avgRating);
-    
-            // Round to one decimal place
-            avgRating = (avgRating != null) ? Math.round(avgRating * 10.0) / 10.0 : 0.0;
-            logger.info("Rounded average rating: {}", avgRating);
-    
-            // Fetch and update restaurant
-            Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
-            
-            restaurant.setAverageRating(avgRating);
-            Restaurant savedRestaurant = restaurantRepository.save(restaurant);
-            
-            logger.info("Successfully updated restaurant {} average rating to {}", 
-                       restaurantId, savedRestaurant.getAverageRating());
-        } catch (Exception e) {
-            logger.error("Error updating average rating for restaurant {}: {}", restaurantId, e.getMessage());
-            throw e;
-        }
+    private void updateRestaurantAverageRating(Restaurant restaurant) {
+        // Fetch all active reviews for the restaurant
+        List<Review> activeReviews = reviewRepository.findByRestaurantAndIsActive(restaurant, true);
+
+        // Calculate the average rating
+        double averageRating = activeReviews.stream()
+                .mapToInt(Review::getRating)
+                .average()
+                .orElse(0.0);
+
+        // Update the restaurant's average rating
+        restaurant.setAverageRating(averageRating);
+        restaurantRepository.save(restaurant);
     }
+
 
     @Transactional(readOnly = true)
     public Double verifyRestaurantRating(Long restaurantId) {

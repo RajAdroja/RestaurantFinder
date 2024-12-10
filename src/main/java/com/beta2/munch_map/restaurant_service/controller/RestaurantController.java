@@ -144,7 +144,7 @@ public class RestaurantController {
     }
 
     @GetMapping("/search")
-//    @PreAuthorize("hasAuthority('USER')")
+    //@PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<List<RestaurantDto>> searchRestaurants(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) CuisineType cuisineType,
