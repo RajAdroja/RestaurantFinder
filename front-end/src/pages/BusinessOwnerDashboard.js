@@ -8,11 +8,11 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
     const [newListing, setNewListing] = useState({
         name: "",
         address: "",
-        zipCode: "",
+        pincode: "",
         description: "",
-        cuisine: "",
+        cuisineType: "",
         foodType: "",
-        priceRange: "",
+        priceLevel: "",
         photos: [],
     });
 
@@ -34,20 +34,43 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
         }
     };
 
-    const handleAddListingSubmit = async () => {
+const handleAddListingSubmit = async (e) => {
+        e.preventDefault();
         const formData = new FormData();
-        formData.append("restaurant", JSON.stringify(newListing));
-        newListing.photos.forEach((photo) => formData.append("images", photo));
-      
+        const { photos, ...restaurantData } = newListing;
+		const token = localStorage.getItem("jwtToken");
+        // Append the restaurant data as a JSON string
+        formData.append("restaurant", JSON.stringify(restaurantData));
+
+        // Append each photo to the FormData
+        photos.forEach((photo) => formData.append("images", photo));
+
         try {
-          await axios.post("http://18.191.151.89:8081/api/restaurants/add", formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-          alert("Restaurant added successfully!");
+            await axios.post("http://localhost:8081/api/restaurants/add", formData, {
+                headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}` }
+            });
+            alert("Restaurant added successfully!");
+            setShowAddModal(false);
         } catch (error) {
-          console.error("Error adding restaurant:", error);
+            console.error("Error adding restaurant:", error.response?.data || error.message);
+            alert("Failed to add restaurant. Please try again.");
         }
-      };
+    };
+
+//    const handleAddListingSubmit = async () => {
+//        const formData = new FormData();
+//        formData.append("restaurant", JSON.stringify(newListing));
+//        newListing.photos.forEach((photo) => formData.append("images", photo));
+//
+//        try {
+//          await axios.post("http://localhost:8081/api/restaurants/add", formData, {
+//            headers: { "Content-Type": "multipart/form-data" },
+//          });
+//          alert("Restaurant added successfully!");
+//        } catch (error) {
+//          console.error("Error adding restaurant:", error);
+//        }
+//      };
 
       const handleDeleteListing = async (id) => {
         try {
@@ -93,11 +116,11 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
                     <li key={restaurant.id} className="border p-4 rounded">
                         <h3 className="text-lg font-bold">{restaurant.name}</h3>
                         <p>Address: {restaurant.address}</p>
-                        <p>ZIP Code: {restaurant.zipCode}</p>
+                        <p>ZIP Code: {restaurant.pincode}</p>
                         <p>Description: {restaurant.description}</p>
-                        <p>Category: {restaurant.cuisine}</p>
+                        <p>Category: {restaurant.cuisineType}</p>
                         <p>Type of Food: {restaurant.foodType}</p>
-                        <p>Price Range: {restaurant.priceRange}</p>
+                        <p>Price Range: {restaurant.priceLevel}</p>
 
                         {restaurant.photos && restaurant.photos.length > 0 && (
                             <div className="grid grid-cols-3 gap-2 mt-4">
@@ -162,10 +185,10 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
                             />
                             <input
                                 type="text"
-                                name="zipCode"
-                                placeholder="ZIP Code"
+                                name="pincode"
+                                placeholder="PIN Code"
                                 className="border p-2 w-full mb-2"
-                                value={newListing.zipCode}
+                                value={newListing.pincode}
                                 onChange={handleAddListingChange}
                                 required
                             />
@@ -178,19 +201,18 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
                                 required
                             />
                             <select
-                                name="cuisine"
+                                name="cuisineType"
                                 className="border p-2 w-full mb-2"
-                                value={newListing.cuisine}
+                                value={newListing.cuisineType}
                                 onChange={handleAddListingChange}
                                 required
                             >
                                 <option value="">Type of Cuisine</option>
-                                <option value="Italian">Italian</option>
-                                <option value="Indian">Indian</option>
-                                <option value="Chinese">Chinese</option>
-                                <option value="Korean">Korean</option>
-                                <option value="American">American</option>
-                                <option value="Japanese">Japanese</option>
+                                <option value="ITALIAN">Italian</option>
+                                <option value="INDIAN">Indian</option>
+                                <option value="CHINESE">Chinese</option>
+                                <option value="MEXICAN">Mexican</option>
+                                <option value="AMERICAN">American</option>
                             </select>
                             <select
                                 name="foodType"
@@ -200,21 +222,21 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
                                 required
                             >
                                 <option value="">Type of Food</option>
-                                <option value="Vegan">Vegan</option>
-                                <option value="Vegetarian">Vegetarian</option>
-                                <option value="Non-Vegetarian">Non-Vegetarian</option>
+                                <option value="VEGAN">Vegan</option>
+                                <option value="VEGETARIAN">Vegetarian</option>
+                                <option value="NON_VEGETARIAN">Non-Vegetarian</option>
                             </select>
                             <select
-                                name="priceRange"
+                                name="priceLevel"
                                 className="border p-2 w-full mb-2"
-                                value={newListing.priceRange}
+                                value={newListing.priceLevel}
                                 onChange={handleAddListingChange}
                                 required
                             >
                                 <option value="">Average Price Range</option>
-                                <option value="Low">Low</option>
-                                <option value="Medium">Medium</option>
-                                <option value="High">High</option>
+                                <option value="LOW">Low</option>
+                                <option value="MEDIUM">Medium</option>
+                                <option value="HIGH">High</option>
                             </select>
                             <input
                                 type="file"

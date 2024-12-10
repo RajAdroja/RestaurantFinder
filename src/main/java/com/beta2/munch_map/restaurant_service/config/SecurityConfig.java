@@ -2,6 +2,7 @@ package com.beta2.munch_map.restaurant_service.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,6 +31,7 @@ public class SecurityConfig {
 //                .cors() // Enable CORS
 //                .and()
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow OPTIONS requests
                         .requestMatchers("/health").permitAll()
                         .requestMatchers("/api/restaurants/search").permitAll()
                         .requestMatchers("/api/search/pincode/**").permitAll()
