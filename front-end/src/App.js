@@ -12,7 +12,7 @@ import axios from "axios";
 
 const App = () => {
     const [listings, setListings] = useState([]);
-
+    const [isLoading, setIsLoading] = useState(true);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userRole, setUserRole] = useState("");
 
@@ -21,22 +21,34 @@ const App = () => {
         2: [],
     });
 
+	const fetchListings = async () => {
+                    try {
+                        const response = await axios.get("http://localhost:8081/api/restaurants/owner", {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem("jwtToken")}`, // Add token if required
+                            },
+                        });
+                        setListings(response.data);
+                        console.log(response.data)
+                    } catch (error) {
+                        console.error("Error fetching listings:", error);
+                    }
+                };
+     const initializeData = async () => {
+             setIsLoading(true);
+             try {
+                 await fetchListings();
+             } finally {
+                 setIsLoading(false); // Ensure loading state is reset
+             }
+         };
 	useEffect(() => {
-            const fetchListings = async () => {
-                try {
-                    const response = await axios.get("http://localhost:8081/api/restaurants/owner", {
-                        headers: {
-                            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`, // Add token if required
-                        },
-                    });
-                    setListings(response.data);
-                } catch (error) {
-                    console.error("Error fetching listings:", error);
-                }
-            };
-
-            fetchListings();
+            initializeData();
         }, []);
+
+        if (isLoading) {
+                return <div>Loading...</div>; // Show loading spinner or text
+            }
 
     const addOrUpdateReview = (restaurantId, review) => {
         setReviews((prev) => ({
