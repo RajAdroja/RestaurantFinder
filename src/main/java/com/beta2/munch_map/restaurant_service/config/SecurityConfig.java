@@ -31,6 +31,7 @@ public class SecurityConfig {
 //                .and()
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/restaurants/search").permitAll()
+                        .requestMatchers("/api/search/pincode/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll() // Public endpoints
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN") // Admin-only access
                         .requestMatchers("/api/restaurants/**").hasAnyAuthority("USER", "BUSINESS_OWNER", "ADMIN") // Restaurant access
