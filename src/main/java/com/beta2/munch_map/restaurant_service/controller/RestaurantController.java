@@ -72,10 +72,6 @@ public class RestaurantController {
             @RequestPart("restaurant") String restaurantJson,
             @RequestPart(value = "images", required = false) List<MultipartFile> images,
             @AuthenticationPrincipal UserDetails userDetails, HttpServletRequest request) {
-//        List<MultipartFile> images = null;
-        request.getHeaderNames().asIterator().forEachRemaining(header -> {
-            System.out.println(header + ": " + request.getHeader(header));
-        });
         ObjectMapper objectMapper = new ObjectMapper();
         RestaurantDto restaurantDto;
         try {

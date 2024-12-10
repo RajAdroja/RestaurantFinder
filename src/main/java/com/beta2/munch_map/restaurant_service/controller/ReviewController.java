@@ -5,6 +5,8 @@ import java.util.List;
 import com.beta2.munch_map.restaurant_service.dto.ReviewDto;
 import com.beta2.munch_map.restaurant_service.model.User;
 import com.beta2.munch_map.restaurant_service.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,10 +56,10 @@ public class ReviewController {
 
     // Get reviews for a specific restaurant
 //    @GetMapping("/restaurant/{restaurantId}")
-    public ResponseEntity<List<Review>> getRestaurantReviews(@PathVariable Long restaurantId) {
-        logger.info("Received request to get reviews for restaurant with ID: " + restaurantId);
-        return ResponseEntity.ok(reviewService.getRestaurantReviews(restaurantId));
-    }
+//    public ResponseEntity<List<Review>> getRestaurantReviews(@PathVariable Long restaurantId) {
+//        logger.info("Received request to get reviews for restaurant with ID: " + restaurantId);
+//        return ResponseEntity.ok(reviewService.getRestaurantReviews(restaurantId));
+//    }
 
     // Get reviews for a specific user
     @GetMapping("/user/{userId}")
@@ -71,9 +73,17 @@ public class ReviewController {
     public ResponseEntity<?> addOrUpdateReview(
             @PathVariable Long restaurantId,
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestPart("review") ReviewDto reviewDto,
+            @RequestPart("review") String reviewJson,
             @RequestPart(value = "newImages", required = false) List<MultipartFile> newImages) {
 
+        ObjectMapper objectMapper = new ObjectMapper();
+        ReviewDto reviewDto;
+        try {
+            // Parse the JSON string into ReviewDto
+            reviewDto = objectMapper.readValue(reviewJson, ReviewDto.class);
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().body("Invalid JSON for review");
+        }
         // Get the logged-in user
         User user = userRepository.findByEmail(userDetails.getUsername());
         if (user == null) {

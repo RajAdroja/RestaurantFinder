@@ -13,6 +13,8 @@ import java.util.List; // For handling the list of photo URLs
 
 public class RestaurantDto {
 
+    private Long id;
+
     @NotBlank(message = "Name is required")
     private String name;
 
@@ -39,6 +41,14 @@ public class RestaurantDto {
 
     private List<String> imagesToRemove; // List of URLs to delete
     private List<MultipartFile> newImages; // List of new images to upload
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     private FoodType foodType; // New field
 
