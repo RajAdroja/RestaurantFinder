@@ -14,7 +14,7 @@ const apiUrl = process.env.REACT_APP_API_URL;
 
 const App = () => {
     const [listings, setListings] = useState([]);
-
+	const [isLoading, setIsLoading] = useState(true);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userRole, setUserRole] = useState("");
 
