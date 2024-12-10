@@ -44,14 +44,6 @@ public class RestaurantController {
        this.restaurantRepository = restaurantRepository;
    }
 
-   // Get single restaurant by ID along with its reviews
-   @GetMapping("/{id}")
-   public ResponseEntity<Restaurant> getRestaurantWithReviews(@PathVariable Long id) {
-       logger.info("Received request to fetch restaurant with ID: {}", id);
-       Restaurant restaurant = restaurantService.getRestaurantWithReviews(id);
-       return ResponseEntity.ok(restaurant);
-   }
-
    @GetMapping("/{id}/verify-rating")
    public ResponseEntity<HashMap<String, Object>> verifyRating(@PathVariable Long id) {
        Double calculatedRating = reviewService.verifyRestaurantRating(id);
@@ -152,7 +144,7 @@ public class RestaurantController {
     }
 
     @GetMapping("/search")
-    @PreAuthorize("hasAuthority('USER')")
+//    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<List<RestaurantDto>> searchRestaurants(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) CuisineType cuisineType,

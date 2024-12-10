@@ -21,7 +21,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long>, J
             "(SELECT COUNT(r2) FROM Restaurant r2 WHERE r2.name = r.name AND r2.address = r.address AND r2.isActive = true) > 1")
     List<Restaurant> findDuplicates();
 
-    @Query("SELECT r FROM Restaurant r WHERE r.isActive = true AND r.name = :name AND r.address = :address ORDER BY r.createdAt DESC")
+    @Query("SELECT r FROM Restaurant r WHERE r.isActive = true AND r.name = :name AND r.address = :address ORDER BY r.createdAt ASC")
     List<Restaurant> findDuplicateGroup(@Param("name") String name, @Param("address") String address);
 
     @Query("SELECT r FROM Restaurant r WHERE r.owner.email = :email AND r.isActive = true")

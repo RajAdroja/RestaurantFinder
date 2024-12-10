@@ -221,9 +221,15 @@ public class RestaurantService {
         }
 
         // The latest duplicate is the first entry in the ordered list
-        Restaurant latestDuplicate = duplicateGroup.get(0);
-        latestDuplicate.setActive(false); // Soft delete
-        restaurantRepository.save(latestDuplicate);
+        if (!duplicateGroup.isEmpty()) {
+            // Keep the latest one active and soft delete the rest
+            Restaurant oldestDuplicate = duplicateGroup.get(0); // The latest duplicate
+            for (int i = 1; i < duplicateGroup.size(); i++) { // Start from the second element
+                Restaurant duplicate = duplicateGroup.get(i);
+                duplicate.setActive(false); // Soft delete the duplicate
+                restaurantRepository.save(duplicate); // Save the soft-deleted duplicate
+            }
+        }
     }
 
     private boolean isAdmin(UserDetails userDetails) {
