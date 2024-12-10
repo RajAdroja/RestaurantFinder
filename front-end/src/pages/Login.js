@@ -1,28 +1,44 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Login({ setIsLoggedIn, setUserRole }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    if (email === "user@example.com") {
+    try {
+      const response = await axios.post("http://localhost:8080/api/auth/login", {
+        email,
+        password,
+      });
+
+      // Extract token and user role from response
+      const { token, role } = response.data;
+
+      // Store token in local storage or cookie for subsequent requests
+      localStorage.setItem("authToken", token);
+
+      // Update application state
       setIsLoggedIn(true);
-      setUserRole("user");
-      navigate("/user/dashboard");
-    } else if (email === "business@example.com") {
-      setIsLoggedIn(true);
-      setUserRole("business");
-      navigate("/business/dashboard");
-    } else if (email === "admin@example.com") {
-      setIsLoggedIn(true);
-      setUserRole("admin");
-      navigate("/admin/dashboard");
-    } else {
-      alert("Invalid credentials!");
+      setUserRole(role);
+
+      // Navigate to role-specific dashboard
+      if (role === "user") {
+        navigate("/user/dashboard");
+      } else if (role === "business") {
+        navigate("/business/dashboard");
+      } else if (role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        throw new Error("Unknown role");
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+      alert("Invalid credentials or server error!");
     }
   };
 
@@ -33,18 +49,23 @@ function Login({ setIsLoggedIn, setUserRole }) {
           <input
               type="email"
               placeholder="Email"
-              className="border p-2 w-full mb-4"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full p-2 border rounded mb-4"
           />
           <input
               type="password"
               placeholder="Password"
-              className="border p-2 w-full mb-4"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full p-2 border rounded mb-4"
           />
-          <button className="bg-green-600 text-white p-2 w-full rounded">
+          <button
+              type="submit"
+              className="w-full p-2 bg-blue-500 text-white rounded"
+          >
             Login
           </button>
         </form>
