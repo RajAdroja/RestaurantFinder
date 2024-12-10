@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+
 const apiUrl = process.env.REACT_APP_API_URL;
-const RestaurantDetails = ({ addReview, userRole }) => {
+
+const RestaurantDetails = ({ userRole }) => {
     const { id } = useParams();
     const restaurantId = parseInt(id, 10);
 
-    // State to store restaurant data and loading state
     const [restaurant, setRestaurant] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     const [reviewText, setReviewText] = useState("");
     const [reviewRating, setReviewRating] = useState(5);
+    const [reviews, setReviews] = useState([]);
+    // State to store images selected for the review
+    const [newImages, setNewImages] = useState([]);
 
     useEffect(() => {
         const fetchRestaurantDetails = async () => {
             const token = localStorage.getItem("jwtToken");
             try {
-                
-                const response = await axios.get(`${apiUrl}/api/restaurants/${restaurantId}`, {
+                const response = await axios.get(`http://localhost:8081/api/restaurants/${restaurantId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -32,15 +35,72 @@ const RestaurantDetails = ({ addReview, userRole }) => {
             }
         };
 
+        const fetchAllReviews = async () => {
+            const token = localStorage.getItem("jwtToken");
+            try {
+                const response = await axios.get(`http://localhost:8081/api/reviews/restaurant/${restaurantId}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setReviews(response.data);
+            } catch (error) {
+                console.error("Error fetching reviews:", error.response?.data || error.message);
+            }
+        };
+
         fetchRestaurantDetails();
+        fetchAllReviews();
     }, [restaurantId]);
+
+    const addReview = async (restaurantId, newReview) => {
+        const token = localStorage.getItem("jwtToken");
+        const formData = new FormData();
+
+        // Construct the review data
+        formData.append("review", JSON.stringify(newReview));
+
+        // Append images if any
+        newImages.forEach((image) => formData.append("newImages", image));
+
+        try {
+            const response = await axios.post(
+                `http://localhost:8081/api/reviews/${restaurantId}/reviews`,
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data", // Send data as multipart
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            alert("Review submitted successfully!");
+            setRestaurant((prev) => ({
+                ...prev,
+                reviews: [...(prev.reviews || []), response.data],
+            }));
+        } catch (error) {
+            console.error("Error adding review:", error.response?.data || error.message);
+            alert("Failed to add review. Please try again.");
+        }
+    };
 
     const handleReviewSubmit = (e) => {
         e.preventDefault();
-        const newReview = { text: reviewText, rating: reviewRating, date: new Date().toLocaleDateString() };
+
+        // Construct the payload in the required format
+        const newReview = {
+            rating: reviewRating,
+            comment: reviewText, // Rename `text` to `comment`
+        };
+
+        // Call the `addReview` function with the correctly formatted payload
         addReview(restaurantId, newReview);
+
+        // Clear the form fields after submission
         setReviewText("");
         setReviewRating(5);
+        setNewImages([]); // Optionally clear selected images
     };
 
     if (loading) {
@@ -75,8 +135,7 @@ const RestaurantDetails = ({ addReview, userRole }) => {
                                     <img
                                         src={photo}
                                         alt={`Restaurant Photo ${index + 1}`}
-                                        className="w-full h-auto object-cover rounded shadow-md"
-                                        style={{ maxHeight: "200px", maxWidth: "300px", objectFit: "cover" }}
+                                        className="w-full h-24 object-cover rounded cursor-pointer"
                                     />
                                 </a>
                             ))}
@@ -89,7 +148,7 @@ const RestaurantDetails = ({ addReview, userRole }) => {
                         {restaurant.reviews?.length > 0 ? (
                             restaurant.reviews.map((review, index) => (
                                 <div key={index} className="mb-4 border p-4 rounded">
-                                    <p>{review.text}</p>
+                                    <p>{review.comment}</p>
                                     <p><strong>Rating:</strong> {review.rating}</p>
                                     <p><strong>Date:</strong> {review.date}</p>
                                 </div>
@@ -122,6 +181,17 @@ const RestaurantDetails = ({ addReview, userRole }) => {
                                     ))}
                                 </select>
                             </div>
+
+                            {/* File input for images */}
+                            <div className="mt-2">
+                                <input
+                                    type="file"
+                                    multiple
+                                    onChange={(e) => setNewImages(Array.from(e.target.files))}
+                                    className="p-2 border rounded"
+                                />
+                            </div>
+
                             <button
                                 type="submit"
                                 className="mt-2 p-2 bg-blue-500 text-white rounded"
