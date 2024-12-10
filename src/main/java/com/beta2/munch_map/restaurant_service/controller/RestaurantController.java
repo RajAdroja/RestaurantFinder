@@ -86,10 +86,18 @@ public class RestaurantController {
     @PreAuthorize("hasAuthority('BUSINESS_OWNER')")
     public ResponseEntity<?> updateRestaurant(
             @PathVariable Long id,
-            @RequestPart("restaurant") RestaurantDto restaurantDto,
+            @RequestPart("restaurant") String restaurantJson,
             @RequestPart(value = "newImages", required = false) List<MultipartFile> newImages,
             @AuthenticationPrincipal UserDetails userDetails) {
 
+        ObjectMapper objectMapper = new ObjectMapper();
+        RestaurantDto restaurantDto;
+        try {
+            // Parse the JSON string into RestaurantDto
+            restaurantDto = objectMapper.readValue(restaurantJson, RestaurantDto.class);
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().body("Invalid JSON for restaurant");
+        }
         // Set the new images into the DTO
         restaurantDto.setNewImages(newImages);
 
