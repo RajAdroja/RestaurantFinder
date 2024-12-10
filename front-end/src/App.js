@@ -14,7 +14,7 @@ const apiUrl = process.env.REACT_APP_API_URL;
 
 const App = () => {
     const [listings, setListings] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userRole, setUserRole] = useState("");
 
@@ -45,12 +45,21 @@ const App = () => {
              }
          };
 	useEffect(() => {
-            initializeData();
-        }, []);
+            const fetchListings = async () => {
+                try {
+                    const response = await axios.get("http://localhost:8081/api/restaurants/owner", {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`, // Add token if required
+                        },
+                    });
+                    setListings(response.data);
+                } catch (error) {
+                    console.error("Error fetching listings:", error);
+                }
+            };
 
-        if (isLoading) {
-                return <div>Loading...</div>; // Show loading spinner or text
-            }
+            fetchListings();
+        }, []);
 
     const addOrUpdateReview = (restaurantId, review) => {
         setReviews((prev) => ({

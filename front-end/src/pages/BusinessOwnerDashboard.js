@@ -236,7 +236,7 @@ const handleAddListingSubmit = async (e) => {
                                 onChange={handleAddListingChange}
                                 required
                             >
-                                <option value="">Average Price Level</option>
+                                <option value="">Average Price Range</option>
                                 <option value="LOW">Low</option>
                                 <option value="MEDIUM">Medium</option>
                                 <option value="HIGH">High</option>

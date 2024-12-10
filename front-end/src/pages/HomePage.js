@@ -27,15 +27,15 @@ const HomePage = () => {
                     priceRange: filters.priceRange,
                     averageRating: filters.rating,
                 });
-
+    
                 // Hit the regular search API
                 response = await fetch(`${apiUrl}/api/restaurants/search?${queryParams}`);
             }
-
+    
             if (!response.ok) {
                 throw new Error("Failed to fetch search results");
             }
-
+    
             const results = await response.json();
             setSearchResults(results);
         } catch (error) {
@@ -43,6 +43,8 @@ const HomePage = () => {
             setSearchResults([]); // Clear results on error
         }
     };
+    
+
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilters({ ...filters, [name]: value });
@@ -102,14 +104,12 @@ const HomePage = () => {
                 </select>
             </div>
 
-            {/* Updated Search Results */}
             <div>
                 {searchResults.length > 0 ? (
                     <ul className="text-left max-w-md mx-auto">
-                        {searchResults.map((restaurant, index) => (
-                            <li key={index} className="mb-4 border p-4 rounded">
+                        {searchResults.map((restaurant) => (
+                            <li key={restaurant.id} className="mb-4 border p-4 rounded">
                                 <h3 className="text-lg font-bold">{restaurant.name}</h3>
-                                <p className="text-gray-700">{restaurant.address}</p>
                                 <p>Category: {restaurant.category}</p>
                                 {restaurant.price && <p>Price: {restaurant.price}</p>}
                                 {restaurant.foodType && <p>Food Type: {restaurant.foodType}</p>}

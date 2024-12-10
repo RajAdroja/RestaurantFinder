@@ -1,37 +1,63 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const UserDashboard = ({ listings }) => {
+const apiUrl = process.env.REACT_APP_API_URL;
+
+const UserDashboard = () => {
     const [searchQuery, setSearchQuery] = useState("");
-    const [searchResults, setSearchResults] = useState(listings);
-
+    const [searchResults, setSearchResults] = useState([]);
     const [filters, setFilters] = useState({
-        cuisine: "",
+        cuisineType: "",
         foodType: "",
-        priceRange: "",
-        rating: "",
+        priceLevel: "",
+        averageRating: "",
     });
-
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleSearch = () => {
-        const filteredResults = listings.filter((restaurant) => {
-            return (
-                restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-                (filters.cuisine ? restaurant.category === filters.cuisine : true) &&
-                (filters.foodType ? restaurant.foodType === filters.foodType : true) &&
-                (filters.priceRange ? restaurant.price === filters.priceRange : true) &&
-                (filters.rating ? Math.floor(restaurant.rating) >= parseInt(filters.rating) : true)
-            );
-        });
-        setSearchResults(filteredResults);
+    // Fetch restaurants based on search and filters
+    const handleSearch = async () => {
+        setLoading(true);
+        
+        try {
+            let response;
+            if (/^\d{5}$/.test(searchQuery)) {
+                // Hit the pincode API if input is a 5-digit pincode
+                response = await fetch(`${apiUrl}/api/search/pincode/${searchQuery}`);
+            } else{
+            // Construct query parameters
+                const queryParams = new URLSearchParams({
+                    name :searchQuery,
+                    cuisine: filters.cuisine,
+                    foodType: filters.foodType,
+                    priceRange: filters.priceRange,
+                    rating: filters.rating,
+                });
+            
+
+                // Make API request
+                const response = await fetch(`${apiUrl}/api/restaurants/search?${queryParams}`);
+                
+                if (!response.ok) {
+                    throw new Error("Failed to fetch search results");
+                }
+                const data = await response.json();
+                setSearchResults(data);}
+        } catch (error) {
+            console.error("Error fetching restaurants:", error);
+            setSearchResults([]);
+        } finally {
+            setLoading(false);
+        }
     };
 
+    // Handle filter changes
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilters({ ...filters, [name]: value });
     };
 
+    // Navigate to restaurant details
     const openRestaurantDetails = (restaurant) => {
         navigate(`/restaurant/${restaurant.id}`, { state: { restaurant } });
     };
@@ -39,6 +65,8 @@ const UserDashboard = ({ listings }) => {
     return (
         <div className="p-6">
             <h1 className="text-4xl font-bold mb-4">User Dashboard</h1>
+
+            {/* Search Bar */}
             <div className="mb-6">
                 <input
                     type="text"
@@ -55,10 +83,10 @@ const UserDashboard = ({ listings }) => {
                 </button>
             </div>
 
-
+            {/* Filters */}
             <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mb-4">
-                <select name="cuisine" className="border p-2" onChange={handleFilterChange}>
-                <option value="">Select Cuisine</option>
+                <select name="cuisineType" className="border p-2" onChange={handleFilterChange}>
+                    <option value="">Select Cuisine</option>
                     <option value="CHINESE">CHINESE</option>
                     <option value="ITALIAN">ITALIAN</option>
                     <option value="INDIAN">INDIAN</option>
@@ -67,17 +95,17 @@ const UserDashboard = ({ listings }) => {
                 </select>
                 <select name="foodType" className="border p-2" onChange={handleFilterChange}>
                     <option value="">Select Food Type</option>
-                    <option value="Vegan">Vegan</option>
-                    <option value="Vegetarian">Vegetarian</option>
-                    <option value="Non-Vegetarian">Non-Vegetarian</option>
+                    <option value="VEGAN">Vegan</option>
+                    <option value="VEGETARIAN">Vegetarian</option>
+                    <option value="NON_VEGETARIAN">Non-Vegetarian</option>
                 </select>
                 <select name="priceRange" className="border p-2" onChange={handleFilterChange}>
                     <option value="">Select Price Range</option>
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HIGH">High</option>
                 </select>
-                <select name="rating" className="border p-2" onChange={handleFilterChange}>
+                <select name="averageRating" className="border p-2" onChange={handleFilterChange}>
                     <option value="">Select Rating</option>
                     <option value="1">1 Star</option>
                     <option value="2">2 Stars</option>
@@ -87,28 +115,28 @@ const UserDashboard = ({ listings }) => {
                 </select>
             </div>
 
-
-            <div>
-                {searchResults.length > 0 ? (
-                    <ul className="text-left max-w-md mx-auto">
-                        {searchResults.map((restaurant) => (
-                            <li
-                                key={restaurant.id}
-                                className="mb-4 border p-4 rounded cursor-pointer hover:bg-gray-100"
-                                onClick={() => openRestaurantDetails(restaurant)}
-                            >
-                                <h3 className="text-lg font-bold">{restaurant.name}</h3>
-                                <p>Category: {restaurant.category}</p>
-                                <p>Rating: {restaurant.rating}</p>
-                                <p>Price: {restaurant.price}</p>
-                                <p>Food Type: {restaurant.foodType}</p>
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p>No results found. Try a different search.</p>
-                )}
-            </div>
+            {/* Restaurant List */}
+            {loading ? (
+                <p>Loading...</p>
+            ) : searchResults.length > 0 ? (
+                <ul className="text-left max-w-md mx-auto">
+                    {searchResults.map((restaurant) => (
+                        <li
+                            key={restaurant.id}
+                            className="mb-4 border p-4 rounded cursor-pointer hover:bg-gray-100"
+                            onClick={() => openRestaurantDetails(restaurant)}
+                        >
+                            <h3 className="text-lg font-bold">{restaurant.name}</h3>
+                            <p>Cuisine Type: {restaurant.cuisineType}</p>
+                            <p>Food Type: {restaurant.foodType}</p>
+                            <p>Price Level: {restaurant.priceLevel}</p>
+                            <p>Average Rating: {restaurant.averageRating}</p>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p>No results found. Try a different search.</p>
+            )}
         </div>
     );
 };
