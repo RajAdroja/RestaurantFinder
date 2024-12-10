@@ -5,11 +5,11 @@ const EditListingModal = ({ listing, onClose, onSubmit }) => {
     const [formData, setFormData] = useState({
         name: listing.name,
         address: listing.address,
-        zipCode: listing.zipCode,
+        pincode: listing.pincode,
         description: listing.description,
-        cuisine: listing.cuisine || "",
+        cuisineType: listing.cuisineType || "",
         foodType: listing.foodType || "",
-        priceRange: listing.priceRange || "",
+        priceLevel: listing.priceLevel || "",
         photos: listing.photos || [],
     });
 
@@ -58,10 +58,10 @@ const EditListingModal = ({ listing, onClose, onSubmit }) => {
                     />
                     <input
                         type="text"
-                        name="zipCode"
-                        placeholder="ZIP Code"
+                        name="pincode"
+                        placeholder="PIN Code"
                         className="border p-2 w-full mb-2"
-                        value={formData.zipCode}
+                        value={formData.pincode}
                         onChange={handleChange}
                         required
                     />
@@ -74,9 +74,9 @@ const EditListingModal = ({ listing, onClose, onSubmit }) => {
                         required
                     />
                     <select
-                        name="cuisine"
+                        name="cuisineType"
                         className="border p-2 w-full mb-2"
-                        value={formData.cuisine}
+                        value={formData.cuisineType}
                         onChange={handleChange}
                         required
                     >
@@ -100,13 +100,13 @@ const EditListingModal = ({ listing, onClose, onSubmit }) => {
                         <option value="NON_VEGETARIAN">Non-Vegetarian</option>
                     </select>
                     <select
-                        name="priceRange"
+                        name="priceLevel"
                         className="border p-2 w-full mb-2"
-                        value={formData.priceRange}
+                        value={formData.priceLevel}
                         onChange={handleChange}
                         required
                     >
-                        <option value="">Average Price Range</option>
+                        <option value="">Average Price Level</option>
                         <option value="LOW">Low</option>
                         <option value="MEDIUM">Medium</option>
                         <option value="HIGH">High</option>
