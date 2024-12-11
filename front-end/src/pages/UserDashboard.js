@@ -18,34 +18,41 @@ const UserDashboard = () => {
     // Fetch restaurants based on search and filters
     const handleSearch = async () => {
         setLoading(true);
-        
+    
         try {
             let response;
             if (/^\d{5}$/.test(searchQuery)) {
                 // Hit the pincode API if input is a 5-digit pincode
                 response = await fetch(`${apiUrl}/api/search/pincode/${searchQuery}`);
-            } else{
-            // Construct query parameters
-                const queryParams = new URLSearchParams({
-                    name :searchQuery,
-                    cuisine: filters.cuisine,
-                    foodType: filters.foodType,
-                    priceRange: filters.priceRange,
-                    rating: filters.rating,
-                });
-            
-
-                // Make API request
-                const response = await fetch(`${apiUrl}/api/restaurants/search?${queryParams}`);
-                
+    
                 if (!response.ok) {
                     throw new Error("Failed to fetch search results");
                 }
+    
                 const data = await response.json();
-                setSearchResults(data);}
+                setSearchResults(data); // Set the results to the JSON response
+            } else {
+                // Construct query parameters
+                const queryParams = new URLSearchParams({
+                    name: searchQuery,
+                    cuisineType: filters.cuisineType,
+                    foodType: filters.foodType,
+                    priceLevel: filters.priceLevel,
+                    averageRating: filters.averageRating,
+                });
+    
+                // Make API request
+                response = await fetch(`${apiUrl}/api/restaurants/search?${queryParams}`);
+    
+                if (!response.ok) {
+                    throw new Error("Failed to fetch search results");
+                }
+    
+                const data = await response.json();
+                setSearchResults(data); // Set the results
+            }
         } catch (error) {
             console.error("Error fetching restaurants:", error);
-            setSearchResults([]);
         } finally {
             setLoading(false);
         }
@@ -65,7 +72,7 @@ const UserDashboard = () => {
     return (
         <div className="p-6">
             <h1 className="text-4xl font-bold mb-4">User Dashboard</h1>
-
+    
             {/* Search Bar */}
             <div className="mb-6">
                 <input
@@ -82,7 +89,7 @@ const UserDashboard = () => {
                     Search
                 </button>
             </div>
-
+    
             {/* Filters */}
             <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mb-4">
                 <select name="cuisineType" className="border p-2" onChange={handleFilterChange}>
@@ -99,7 +106,7 @@ const UserDashboard = () => {
                     <option value="VEGETARIAN">Vegetarian</option>
                     <option value="NON_VEGETARIAN">Non-Vegetarian</option>
                 </select>
-                <select name="priceRange" className="border p-2" onChange={handleFilterChange}>
+                <select name="priceLevel" className="border p-2" onChange={handleFilterChange}>
                     <option value="">Select Price Range</option>
                     <option value="LOW">Low</option>
                     <option value="MEDIUM">Medium</option>
@@ -114,23 +121,26 @@ const UserDashboard = () => {
                     <option value="5">5 Stars</option>
                 </select>
             </div>
-
+    
             {/* Restaurant List */}
             {loading ? (
                 <p>Loading...</p>
             ) : searchResults.length > 0 ? (
                 <ul className="text-left max-w-md mx-auto">
-                    {searchResults.map((restaurant) => (
+                    {searchResults.map((restaurant, index) => (
                         <li
-                            key={restaurant.id}
+                            key={index} // Use index for unique key as `id` might be missing for pincode API data
                             className="mb-4 border p-4 rounded cursor-pointer hover:bg-gray-100"
-                            onClick={() => openRestaurantDetails(restaurant)}
+                            onClick={() =>
+                                restaurant.id ? openRestaurantDetails(restaurant) : null // Open details only if `id` is present
+                            }
                         >
                             <h3 className="text-lg font-bold">{restaurant.name}</h3>
-                            <p>Cuisine Type: {restaurant.cuisineType}</p>
-                            <p>Food Type: {restaurant.foodType}</p>
-                            <p>Price Level: {restaurant.priceLevel}</p>
-                            <p>Average Rating: {restaurant.averageRating}</p>
+                            {restaurant.address && <p>Address: {restaurant.address}</p>}
+                            {restaurant.cuisineType && <p>Cuisine Type: {restaurant.cuisineType}</p>}
+                            {restaurant.foodType && <p>Food Type: {restaurant.foodType}</p>}
+                            {restaurant.priceLevel && <p>Price Level: {restaurant.priceLevel}</p>}
+                            {restaurant.averageRating && <p>Average Rating: {restaurant.averageRating}</p>}
                         </li>
                     ))}
                 </ul>

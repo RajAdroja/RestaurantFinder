@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import EditListingModal from "../components/EditListingModal";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+
 const apiUrl = process.env.REACT_APP_API_URL;
 
 const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addListing }) => {
@@ -18,7 +19,23 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
         photos: [],
     });
 
+    const [restaurantListings, setRestaurantListings] = useState([]); // Store fetched listings
     const navigate = useNavigate();
+
+    // Define fetchListings function
+    const fetchListings = async () => {
+        try {
+            const token = localStorage.getItem("jwtToken");  // Get JWT token from localStorage
+            const response = await axios.get(`${apiUrl}/api/restaurants/owner`, {
+                headers: {
+                    Authorization: `Bearer ${token}`  // Include the token for authentication
+                }
+            });
+            setRestaurantListings(response.data); // Update state with the fetched data
+        } catch (error) {
+            console.error("Error fetching restaurant listings:", error);
+        }
+    };
 
     const handleAddListingChange = (e) => {
         const { name, value, files } = e.target;
@@ -36,15 +53,13 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
         }
     };
 
-const handleAddListingSubmit = async (e) => {
+    const handleAddListingSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData();
         const { photos, ...restaurantData } = newListing;
 		const token = localStorage.getItem("jwtToken");
-        // Append the restaurant data as a JSON string
         formData.append("restaurant", JSON.stringify(restaurantData));
 
-        // Append each photo to the FormData
         photos.forEach((photo) => formData.append("images", photo));
 
         try {
@@ -52,6 +67,7 @@ const handleAddListingSubmit = async (e) => {
                 headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}` }
             });
             alert("Restaurant added successfully!");
+            fetchListings(); // Refresh the listings after adding a new one
             setShowAddModal(false);
         } catch (error) {
             console.error("Error adding restaurant:", error.response?.data || error.message);
@@ -59,44 +75,31 @@ const handleAddListingSubmit = async (e) => {
         }
     };
 
-//    const handleAddListingSubmit = async () => {
-//        const formData = new FormData();
-//        formData.append("restaurant", JSON.stringify(newListing));
-//        newListing.photos.forEach((photo) => formData.append("images", photo));
-//
-//        try {
-//          await axios.post("http://localhost:8081/api/restaurants/add", formData, {
-//            headers: { "Content-Type": "multipart/form-data" },
-//          });
-//          alert("Restaurant added successfully!");
-//        } catch (error) {
-//          console.error("Error adding restaurant:", error);
-//        }
-//      };
-
-      const handleDeleteListing = async (id) => {
+    const handleDeleteListing = async (id) => {
         try {
-          await axios.delete(`${apiUrl}/api/restaurants/delete/${id}`);
-          alert("Restaurant deleted successfully!");
+            await axios.delete(`${apiUrl}/api/restaurants/delete/${id}`);
+            alert("Restaurant deleted successfully!");
+            fetchListings(); // Refresh the listings after deleting one
         } catch (error) {
-          console.error("Error deleting restaurant:", error);
+            console.error("Error deleting restaurant:", error);
         }
-      };
+    };
 
-      const handleEditSubmit = async (updatedListing) => {
+    const handleEditSubmit = async (updatedListing) => {
         const formData = new FormData();
         formData.append("restaurant", JSON.stringify(updatedListing));
         updatedListing.photos.forEach((photo) => formData.append("newImages", photo));
-      
+
         try {
-          await axios.put(`${apiUrl}/api/restaurants/${updatedListing.id}`, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-          alert("Restaurant updated successfully!");
+            await axios.put(`${apiUrl}/api/restaurants/${updatedListing.id}`, formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            alert("Restaurant updated successfully!");
+            fetchListings(); // Refresh the listings after updating one
         } catch (error) {
-          console.error("Error updating restaurant:", error);
+            console.error("Error updating restaurant:", error);
         }
-      };
+    };
 
     const viewRestaurantDetails = (restaurantId) => {
         navigate(`/restaurant/${restaurantId}`);
@@ -114,7 +117,7 @@ const handleAddListingSubmit = async (e) => {
             </button>
 
             <ul className="space-y-4">
-                {listings.map((restaurant) => (
+                {restaurantListings.map((restaurant) => (
                     <li key={restaurant.id} className="border p-4 rounded">
                         <h3 className="text-lg font-bold">{restaurant.name}</h3>
                         <p>Address: {restaurant.address}</p>
@@ -146,7 +149,7 @@ const handleAddListingSubmit = async (e) => {
                                 Edit Listing
                             </button>
                             <button
-                                onClick={() => deleteListing(restaurant.id)}
+                                onClick={() => handleDeleteListing(restaurant.id)}
                                 className="bg-red-500 text-white p-2 rounded"
                             >
                                 Delete Listing
