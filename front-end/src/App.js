@@ -8,6 +8,7 @@ import BusinessOwnerDashboard from "./pages/BusinessOwnerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import RestaurantDetails from "./pages/RestaurantDetails";
 import UserRestaurantDetails from "./pages/UserRestaurantDetails";
+import FixDuplicateListings from "./components/FixDuplicateListings";
 import axios from "axios";
 
 const apiUrl = process.env.REACT_APP_API_URL;
@@ -155,7 +156,10 @@ const App = () => {
                         />
                     }
                 />
-            </Routes>
+
+                    {/* Add other routes as needed */}
+                    <Route path="/admin/fix-duplicates" element={<FixDuplicateListings />}/>
+                </Routes>
         </Router>
     );
 };
