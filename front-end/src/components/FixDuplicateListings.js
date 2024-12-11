@@ -26,14 +26,15 @@ const FixDuplicateListings = () => {
     };
 
     // Handle deleting the latest duplicate
-    const deleteDuplicate = async (id) => {
+    const deleteDuplicate = async (name, address) => {
         try {
             const apiUrl = process.env.REACT_APP_API_URL;
             const token = localStorage.getItem("jwtToken");
-            await axios.delete(`${apiUrl}/api/restaurants/duplicates/${id}`, {
+            await axios.delete(`${apiUrl}/api/restaurants/duplicates`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
+                params: { name, address }
             });
             alert("Duplicate listing deleted successfully!");
             fetchDuplicates(); // Refresh the duplicates list
@@ -55,25 +56,26 @@ const FixDuplicateListings = () => {
                 <p>Loading duplicate listings...</p>
             ) : (
                 <div className="space-y-4">
-                    {duplicates.map((duplicate) => (
-                        <div
-                            key={duplicate.id}
-                            className="border border-gray-400 p-4 rounded flex justify-between items-center"
-                        >
-                            <div>
-                                <h3 className="text-lg font-bold">{duplicate.name}</h3>
-                                <p>
-                                    Duplicates: <strong>{duplicate.duplicateCount}</strong>
-                                </p>
-                            </div>
-                            <button
-                                onClick={() => deleteDuplicate(duplicate.latestDuplicateId)}
-                                className="bg-red-500 text-white px-4 py-2 rounded"
-                            >
-                                Delete Duplicate
-                            </button>
-                        </div>
-                    ))}
+                    {loading ? (
+                                    <p>Loading duplicate listings...</p>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {Object.entries(duplicates).map(([key, group]) => (
+                                            <div key={key} className="border border-gray-400 p-4 rounded">
+                                                <h3 className="text-lg font-bold">
+                                                    {group[0].name} ({group[0].address})
+                                                </h3>
+                                                <p>Duplicates Count: {group.length-1}</p>
+                                                <button
+                                                    onClick={() => deleteDuplicate(group[0].name, group[0].address)}
+                                                    className="bg-red-500 text-white px-4 py-2 rounded mt-2"
+                                                >
+                                                    Remove Newest Duplicates
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                 </div>
             )}
         </div>

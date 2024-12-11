@@ -145,12 +145,12 @@ const RestaurantDetails = ({ userRole }) => {
                     {/* Reviews Section */}
                     <div className="mt-6">
                         <h2 className="text-2xl font-bold mb-4">Reviews:</h2>
-                        {restaurant.reviews?.length > 0 ? (
-                            restaurant.reviews.map((review, index) => (
+                        {reviews?.length > 0 ? (
+                            reviews.map((review, index) => (
                                 <div key={index} className="mb-4 border p-4 rounded">
                                     <p>{review.comment}</p>
                                     <p><strong>Rating:</strong> {review.rating}</p>
-                                    <p><strong>Date:</strong> {review.date}</p>
+//                                    <p><strong>Date:</strong> {review.date}</p>
                                 </div>
                             ))
                         ) : (
