@@ -110,10 +110,7 @@ const HomePage = () => {
                         {searchResults.map((restaurant) => (
                             <li key={restaurant.id} className="mb-4 border p-4 rounded">
                                 <h3 className="text-lg font-bold">{restaurant.name}</h3>
-                                <p>Category: {restaurant.category}</p>
-                                {restaurant.price && <p>Price: {restaurant.price}</p>}
-                                {restaurant.foodType && <p>Food Type: {restaurant.foodType}</p>}
-                                {restaurant.rating && <p>Rating: {restaurant.rating}</p>}
+                                {restaurant.address && <p className="text-gray-700">{restaurant.address}</p>}
                             </li>
                         ))}
                     </ul>
