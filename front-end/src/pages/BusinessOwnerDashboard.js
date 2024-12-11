@@ -83,11 +83,17 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
 
     const handleDeleteListing = async (id) => {
         try {
-            await axios.delete(`${apiUrl}/api/restaurants/delete/${id}`);
+            const token = localStorage.getItem("jwtToken"); // Retrieve the JWT token
+            await axios.delete(`${apiUrl}/api/restaurants/delete/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Include the token
+                },
+            });
             alert("Restaurant deleted successfully!");
             fetchListings(); // Refresh the listings after deleting one
         } catch (error) {
-            console.error("Error deleting restaurant:", error);
+            console.error("Error deleting restaurant:", error.response?.data || error.message);
+            alert(error.response?.data?.message || "Failed to delete the restaurant. Please try again.");
         }
     };
 
