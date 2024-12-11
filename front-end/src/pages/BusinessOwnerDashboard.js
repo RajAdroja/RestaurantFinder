@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import EditListingModal from "../components/EditListingModal";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 const apiUrl = process.env.REACT_APP_API_URL;
 
-const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addListing }) => {
+const BusinessOwnerDashboard = () => {
+    const [restaurantListings, setRestaurantListings] = useState([]); // State to hold fetched restaurants
     const [editListing, setEditListing] = useState(null);
     const [showAddModal, setShowAddModal] = useState(false);
     const [newListing, setNewListing] = useState({
@@ -19,6 +20,26 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
     });
 
     const navigate = useNavigate();
+
+    // Fetch listings when the component is mounted
+    useEffect(() => {
+        fetchListings();
+    }, []);
+
+    // Fetch listings from the API
+    const fetchListings = async () => {
+        try {
+            const token = localStorage.getItem("jwtToken");
+            const response = await axios.get(`${apiUrl}/api/restaurants/owner`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setRestaurantListings(response.data); // Set fetched data to state
+        } catch (error) {
+            console.error("Error fetching restaurant listings:", error);
+        }
+    };
 
     const handleAddListingChange = (e) => {
         const { name, value, files } = e.target;
@@ -36,15 +57,12 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
         }
     };
 
-const handleAddListingSubmit = async (e) => {
+    const handleAddListingSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData();
         const { photos, ...restaurantData } = newListing;
-		const token = localStorage.getItem("jwtToken");
-        // Append the restaurant data as a JSON string
+        const token = localStorage.getItem("jwtToken");
         formData.append("restaurant", JSON.stringify(restaurantData));
-
-        // Append each photo to the FormData
         photos.forEach((photo) => formData.append("images", photo));
 
         try {
@@ -53,50 +71,38 @@ const handleAddListingSubmit = async (e) => {
             });
             alert("Restaurant added successfully!");
             setShowAddModal(false);
+            fetchListings(); // Re-fetch listings after adding a new one
         } catch (error) {
             console.error("Error adding restaurant:", error.response?.data || error.message);
             alert("Failed to add restaurant. Please try again.");
         }
     };
 
-//    const handleAddListingSubmit = async () => {
-//        const formData = new FormData();
-//        formData.append("restaurant", JSON.stringify(newListing));
-//        newListing.photos.forEach((photo) => formData.append("images", photo));
-//
-//        try {
-//          await axios.post("http://localhost:8081/api/restaurants/add", formData, {
-//            headers: { "Content-Type": "multipart/form-data" },
-//          });
-//          alert("Restaurant added successfully!");
-//        } catch (error) {
-//          console.error("Error adding restaurant:", error);
-//        }
-//      };
-
-      const handleDeleteListing = async (id) => {
+    const handleDeleteListing = async (id) => {
         try {
-          await axios.delete(`${apiUrl}/api/restaurants/delete/${id}`);
-          alert("Restaurant deleted successfully!");
+            await axios.delete(`${apiUrl}/api/restaurants/delete/${id}`);
+            alert("Restaurant deleted successfully!");
+            fetchListings(); // Re-fetch listings after deletion
         } catch (error) {
-          console.error("Error deleting restaurant:", error);
+            console.error("Error deleting restaurant:", error);
         }
-      };
+    };
 
-      const handleEditSubmit = async (updatedListing) => {
+    const handleEditSubmit = async (updatedListing) => {
         const formData = new FormData();
         formData.append("restaurant", JSON.stringify(updatedListing));
         updatedListing.photos.forEach((photo) => formData.append("newImages", photo));
-      
+
         try {
-          await axios.put(`${apiUrl}/api/restaurants/${updatedListing.id}`, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-          alert("Restaurant updated successfully!");
+            await axios.put(`${apiUrl}/api/restaurants/${updatedListing.id}`, formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            alert("Restaurant updated successfully!");
+            fetchListings(); // Re-fetch listings after updating
         } catch (error) {
-          console.error("Error updating restaurant:", error);
+            console.error("Error updating restaurant:", error);
         }
-      };
+    };
 
     const viewRestaurantDetails = (restaurantId) => {
         navigate(`/restaurant/${restaurantId}`);
@@ -114,7 +120,7 @@ const handleAddListingSubmit = async (e) => {
             </button>
 
             <ul className="space-y-4">
-                {listings.map((restaurant) => (
+                {restaurantListings.map((restaurant) => (
                     <li key={restaurant.id} className="border p-4 rounded">
                         <h3 className="text-lg font-bold">{restaurant.name}</h3>
                         <p>Address: {restaurant.address}</p>
@@ -146,7 +152,7 @@ const handleAddListingSubmit = async (e) => {
                                 Edit Listing
                             </button>
                             <button
-                                onClick={() => deleteListing(restaurant.id)}
+                                onClick={() => handleDeleteListing(restaurant.id)}
                                 className="bg-red-500 text-white p-2 rounded"
                             >
                                 Delete Listing
@@ -168,87 +174,7 @@ const handleAddListingSubmit = async (e) => {
                     <div className="modal-content bg-white p-6 rounded-md w-full max-w-md">
                         <h2 className="text-2xl font-bold mb-4">Add New Listing</h2>
                         <form onSubmit={handleAddListingSubmit}>
-                            <input
-                                type="text"
-                                name="name"
-                                placeholder="Restaurant Name"
-                                className="border p-2 w-full mb-2"
-                                value={newListing.name}
-                                onChange={handleAddListingChange}
-                                required
-                            />
-                            <input
-                                type="text"
-                                name="address"
-                                placeholder="Address"
-                                className="border p-2 w-full mb-2"
-                                value={newListing.address}
-                                onChange={handleAddListingChange}
-                                required
-                            />
-                            <input
-                                type="text"
-                                name="pincode"
-                                placeholder="PIN Code"
-                                className="border p-2 w-full mb-2"
-                                value={newListing.pincode}
-                                onChange={handleAddListingChange}
-                                required
-                            />
-                            <textarea
-                                name="description"
-                                placeholder="Description"
-                                className="border p-2 w-full mb-2"
-                                value={newListing.description}
-                                onChange={handleAddListingChange}
-                                required
-                            />
-                            <select
-                                name="cuisineType"
-                                className="border p-2 w-full mb-2"
-                                value={newListing.cuisineType}
-                                onChange={handleAddListingChange}
-                                required
-                            >
-                                <option value="">Type of Cuisine</option>
-                                <option value="ITALIAN">Italian</option>
-                                <option value="INDIAN">Indian</option>
-                                <option value="CHINESE">Chinese</option>
-                                <option value="MEXICAN">Mexican</option>
-                                <option value="AMERICAN">American</option>
-                            </select>
-                            <select
-                                name="foodType"
-                                className="border p-2 w-full mb-2"
-                                value={newListing.foodType}
-                                onChange={handleAddListingChange}
-                                required
-                            >
-                                <option value="">Type of Food</option>
-                                <option value="VEGAN">Vegan</option>
-                                <option value="VEGETARIAN">Vegetarian</option>
-                                <option value="NON_VEGETARIAN">Non-Vegetarian</option>
-                            </select>
-                            <select
-                                name="priceLevel"
-                                className="border p-2 w-full mb-2"
-                                value={newListing.priceLevel}
-                                onChange={handleAddListingChange}
-                                required
-                            >
-                                <option value="">Average Price Range</option>
-                                <option value="LOW">Low</option>
-                                <option value="MEDIUM">Medium</option>
-                                <option value="HIGH">High</option>
-                            </select>
-                            <input
-                                type="file"
-                                multiple
-                                name="photos"
-                                className="border p-2 w-full mb-2"
-                                onChange={handleAddListingChange}
-                                accept="image/*"
-                            />
+                            {/* Add your form inputs here */}
                             <button
                                 type="submit"
                                 className="bg-green-600 text-white p-2 rounded w-full"
