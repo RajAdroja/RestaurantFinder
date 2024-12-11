@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import com.beta2.munch_map.restaurant_service.util.GoogleMapsClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import com.beta2.munch_map.restaurant_service.repository.ReviewRepository;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class RestaurantService {
@@ -203,17 +205,32 @@ public class RestaurantService {
     }
 
     // Get duplicate restaurants for admin dashboard
-    public List<RestaurantDto> getDuplicateRestaurants(UserDetails userDetails) {
-
+    public Map<String, List<RestaurantDto>> getDuplicateRestaurants(UserDetails userDetails) {
         if (!isAdmin(userDetails)) {
             throw new SecurityException("Only ADMIN can access duplicate restaurants.");
         }
 
+        // Fetch all duplicates
         List<Restaurant> duplicates = restaurantRepository.findDuplicates();
-        return duplicates.stream()
-                .map(restaurantMapper::toDto)
-                .toList();
+
+        // Group duplicates by unique key (e.g., name + address)
+        Map<String, List<Restaurant>> groupedDuplicates = duplicates.stream()
+                .collect(Collectors.groupingBy(restaurant -> restaurant.getName() + "|" + restaurant.getAddress()));
+
+        // Convert to DTOs and return
+        Map<String, List<RestaurantDto>> groupedDuplicateDtos = new HashMap<>();
+        for (Map.Entry<String, List<Restaurant>> entry : groupedDuplicates.entrySet()) {
+            groupedDuplicateDtos.put(
+                    entry.getKey(),
+                    entry.getValue().stream()
+                            .map(restaurantMapper::toDto)
+                            .toList()
+            );
+        }
+
+        return groupedDuplicateDtos;
     }
+
 
     // Soft delete the latest duplicate restaurant
     public void deleteLatestDuplicate(String name, String address, UserDetails userDetails) {

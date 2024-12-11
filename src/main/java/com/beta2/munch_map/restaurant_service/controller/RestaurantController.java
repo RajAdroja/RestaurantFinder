@@ -2,6 +2,7 @@ package com.beta2.munch_map.restaurant_service.controller;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,7 +110,7 @@ public class RestaurantController {
 
     @GetMapping("/duplicates")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<List<RestaurantDto>> getDuplicateRestaurants(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<Map<String, List<RestaurantDto>>> getDuplicateRestaurants(@AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(restaurantService.getDuplicateRestaurants(userDetails));
     }
 
