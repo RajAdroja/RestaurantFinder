@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import EditListingModal from "../components/EditListingModal";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+
 const apiUrl = process.env.REACT_APP_API_URL;
 
-const BusinessOwnerDashboard = () => {
-    const [restaurantListings, setRestaurantListings] = useState([]); // State to hold fetched restaurants
+const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addListing }) => {
     const [editListing, setEditListing] = useState(null);
     const [showAddModal, setShowAddModal] = useState(false);
     const [newListing, setNewListing] = useState({
@@ -19,23 +19,19 @@ const BusinessOwnerDashboard = () => {
         photos: [],
     });
 
+    const [restaurantListings, setRestaurantListings] = useState([]); // Store fetched listings
     const navigate = useNavigate();
 
-    // Fetch listings when the component is mounted
-    useEffect(() => {
-        fetchListings();
-    }, []);
-
-    // Fetch listings from the API
+    // Define fetchListings function
     const fetchListings = async () => {
         try {
-            const token = localStorage.getItem("jwtToken");
-            const response = await axios.get(`${apiUrl}/api/restaurants/owner`, {
+            const token = localStorage.getItem("jwtToken");  // Get JWT token from localStorage
+            const response = await axios.get(`http://localhost:8081/api/restaurants/owner`, {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`  // Include the token for authentication
                 }
             });
-            setRestaurantListings(response.data); // Set fetched data to state
+            setRestaurantListings(response.data); // Update state with the fetched data
         } catch (error) {
             console.error("Error fetching restaurant listings:", error);
         }
@@ -61,8 +57,9 @@ const BusinessOwnerDashboard = () => {
         e.preventDefault();
         const formData = new FormData();
         const { photos, ...restaurantData } = newListing;
-        const token = localStorage.getItem("jwtToken");
+		const token = localStorage.getItem("jwtToken");
         formData.append("restaurant", JSON.stringify(restaurantData));
+
         photos.forEach((photo) => formData.append("images", photo));
 
         try {
@@ -70,8 +67,8 @@ const BusinessOwnerDashboard = () => {
                 headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}` }
             });
             alert("Restaurant added successfully!");
+            fetchListings(); // Refresh the listings after adding a new one
             setShowAddModal(false);
-            fetchListings(); // Re-fetch listings after adding a new one
         } catch (error) {
             console.error("Error adding restaurant:", error.response?.data || error.message);
             alert("Failed to add restaurant. Please try again.");
@@ -82,7 +79,7 @@ const BusinessOwnerDashboard = () => {
         try {
             await axios.delete(`${apiUrl}/api/restaurants/delete/${id}`);
             alert("Restaurant deleted successfully!");
-            fetchListings(); // Re-fetch listings after deletion
+            fetchListings(); // Refresh the listings after deleting one
         } catch (error) {
             console.error("Error deleting restaurant:", error);
         }
@@ -98,7 +95,7 @@ const BusinessOwnerDashboard = () => {
                 headers: { "Content-Type": "multipart/form-data" },
             });
             alert("Restaurant updated successfully!");
-            fetchListings(); // Re-fetch listings after updating
+            fetchListings(); // Refresh the listings after updating one
         } catch (error) {
             console.error("Error updating restaurant:", error);
         }
@@ -174,7 +171,87 @@ const BusinessOwnerDashboard = () => {
                     <div className="modal-content bg-white p-6 rounded-md w-full max-w-md">
                         <h2 className="text-2xl font-bold mb-4">Add New Listing</h2>
                         <form onSubmit={handleAddListingSubmit}>
-                            {/* Add your form inputs here */}
+                            <input
+                                type="text"
+                                name="name"
+                                placeholder="Restaurant Name"
+                                className="border p-2 w-full mb-2"
+                                value={newListing.name}
+                                onChange={handleAddListingChange}
+                                required
+                            />
+                            <input
+                                type="text"
+                                name="address"
+                                placeholder="Address"
+                                className="border p-2 w-full mb-2"
+                                value={newListing.address}
+                                onChange={handleAddListingChange}
+                                required
+                            />
+                            <input
+                                type="text"
+                                name="pincode"
+                                placeholder="PIN Code"
+                                className="border p-2 w-full mb-2"
+                                value={newListing.pincode}
+                                onChange={handleAddListingChange}
+                                required
+                            />
+                            <textarea
+                                name="description"
+                                placeholder="Description"
+                                className="border p-2 w-full mb-2"
+                                value={newListing.description}
+                                onChange={handleAddListingChange}
+                                required
+                            />
+                            <select
+                                name="cuisineType"
+                                className="border p-2 w-full mb-2"
+                                value={newListing.cuisineType}
+                                onChange={handleAddListingChange}
+                                required
+                            >
+                                <option value="">Type of Cuisine</option>
+                                <option value="ITALIAN">Italian</option>
+                                <option value="INDIAN">Indian</option>
+                                <option value="CHINESE">Chinese</option>
+                                <option value="MEXICAN">Mexican</option>
+                                <option value="AMERICAN">American</option>
+                            </select>
+                            <select
+                                name="foodType"
+                                className="border p-2 w-full mb-2"
+                                value={newListing.foodType}
+                                onChange={handleAddListingChange}
+                                required
+                            >
+                                <option value="">Type of Food</option>
+                                <option value="VEGAN">Vegan</option>
+                                <option value="VEGETARIAN">Vegetarian</option>
+                                <option value="NON_VEGETARIAN">Non-Vegetarian</option>
+                            </select>
+                            <select
+                                name="priceLevel"
+                                className="border p-2 w-full mb-2"
+                                value={newListing.priceLevel}
+                                onChange={handleAddListingChange}
+                                required
+                            >
+                                <option value="">Average Price Range</option>
+                                <option value="LOW">Low</option>
+                                <option value="MEDIUM">Medium</option>
+                                <option value="HIGH">High</option>
+                            </select>
+                            <input
+                                type="file"
+                                multiple
+                                name="photos"
+                                className="border p-2 w-full mb-2"
+                                onChange={handleAddListingChange}
+                                accept="image/*"
+                            />
                             <button
                                 type="submit"
                                 className="bg-green-600 text-white p-2 rounded w-full"
