@@ -26,7 +26,7 @@ const BusinessOwnerDashboard = ({ listings, updateListing, deleteListing, addLis
     const fetchListings = async () => {
         try {
             const token = localStorage.getItem("jwtToken");  // Get JWT token from localStorage
-            const response = await axios.get(`http://localhost:8081/api/restaurants/owner`, {
+            const response = await axios.get(`${apiUrl}/api/restaurants/owner`, {
                 headers: {
                     Authorization: `Bearer ${token}`  // Include the token for authentication
                 }
